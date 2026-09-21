@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DiveInOut ｜ 潛旅生活誌</title>
 <meta name="description" content="潛進亞洲的海。愈往下,看見愈深的世界。">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <style>
   :root{
     --ink:#e9fbff;--dim:#8fb3bf;--accent:#2ff3e0;--pop:#ff5470;
@@ -109,30 +108,20 @@
   .lname{font-size:13px;font-weight:800;color:var(--accent);margin:14px 0 6px;font-family:monospace}
   .hint{font-size:12px;color:var(--dim);margin-top:10px}
 
-  /* 地圖 */
-  .mtitle{font-family:monospace;font-size:12px;color:var(--accent);margin:14px 0 8px;letter-spacing:1px}
-  #map{height:460px;border-radius:14px;overflow:hidden;border:1px solid var(--edge);z-index:2}
-  #map{background:#04202c}
-  .leaflet-popup-content-wrapper{background:rgba(4,26,36,.86)!important;backdrop-filter:blur(10px);
-     border:1px solid var(--edge);border-radius:14px;box-shadow:0 16px 44px -16px rgba(0,0,0,.7);color:var(--ink)!important}
-  .leaflet-popup-tip{background:rgba(4,26,36,.86)!important}
-  .leaflet-popup-close-button{color:var(--dim)!important}
-  .pop{color:var(--ink);min-width:214px}.pop h4{font-size:16px;margin-bottom:2px;color:#fff}
-  .pop .pl{font-size:12px;color:var(--dim);margin-bottom:7px}
-  .pop .tag{display:inline-block;background:rgba(47,243,224,.12);color:var(--accent);border:1px solid var(--edge);
-     border-radius:99px;padding:1px 9px;font-size:11px;font-weight:700;margin:0 4px 6px 0}
-  .pop p{font-size:12.5px;line-height:1.65;margin:6px 0;color:#cfe4ea;padding-top:6px;border-top:1px dashed rgba(255,255,255,.08)}
-  .pop b{color:var(--accent);margin-right:7px;white-space:nowrap}
-  .olabel{background:none!important;border:none!important;color:rgba(143,179,191,.42);
-     font-family:monospace;letter-spacing:3px;font-size:12px;white-space:nowrap;pointer-events:none;transition:opacity .5s}
-  #map.zoomed .olabel{opacity:0}
-  .ctytip{background:rgba(4,26,36,.88)!important;border:1px solid var(--edge)!important;
-     color:var(--ink)!important;font-weight:800;border-radius:8px!important;box-shadow:none!important}
-  .buoy .pin{width:15px;height:15px;border-radius:50%;background:var(--accent);border:2px solid #eafcff;
-     box-shadow:0 0 0 4px rgba(47,243,224,.22),0 0 16px var(--accent);position:relative}
-  .buoy .pin:after{content:"";position:absolute;left:50%;top:50%;width:15px;height:15px;border-radius:50%;
-     transform:translate(-50%,-50%);border:1px solid var(--accent);animation:ping 2s ease-out infinite}
-  @keyframes ping{0%{width:15px;height:15px;opacity:.7}100%{width:42px;height:42px;opacity:0}}
+  /* 潛點地圖入口 */
+  .spot-months{display:flex;gap:7px;overflow-x:auto;padding:2px 1px 8px;scrollbar-width:none}
+  .spot-months::-webkit-scrollbar{display:none}
+  .spot-month{flex:0 0 auto;min-width:48px;padding:8px 10px;border:1px solid rgba(255,255,255,.14);border-radius:99px;
+     color:var(--ink);font:700 12px "SFMono-Regular",ui-monospace,Menlo,Consolas,monospace;text-align:center;transition:.2s}
+  .spot-month:hover,.spot-month.current{color:#04202c;background:var(--accent);border-color:var(--accent);box-shadow:0 0 18px rgba(47,243,224,.2)}
+  .spot-pick-title{margin:18px 0 9px;color:var(--accent);font-size:12px;letter-spacing:2px;font-weight:800}
+  .spot-picks{grid-template-columns:repeat(3,1fr)}
+  .spot-pick{display:block;color:var(--ink);min-width:0}
+  .spot-pick h3{margin:0 0 5px;font-size:15px}
+  .spot-pick .place{color:var(--dim);font-size:12px;margin-bottom:7px}
+  .spot-pick .see{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .spot-entry-status{color:var(--dim);font-size:13px}
+  @media(max-width:680px){.spot-picks{grid-template-columns:1fr}.spot-month{min-width:45px}}
 
   .cta{display:inline-block;margin-top:6px;background:var(--accent);color:#04202c;font-weight:900;
      padding:13px 24px;border-radius:8px;letter-spacing:1px;transition:.2s}
@@ -169,10 +158,10 @@
   <div class="grid" id="newsGrid"><div class="ncard loading">載入中…</div></div>
 </section>
 
-<!-- 2m 新手 -->
+<!-- 5m 新手 -->
 <section class="zone wrap reveal" id="rookie">
-  <div class="wm mono">02</div>
-  <div class="lab mono">02.0M — SHALLOWS / 淺灘</div>
+  <div class="wm mono">05</div>
+  <div class="lab mono">05.0M — SHALLOWS / 體驗潛水深度</div>
   <h2>新手上路</h2>
   <p class="lead">還沒下水?先搞懂這些再談考證。點開你想看的。</p>
 
@@ -233,21 +222,22 @@
   </div>
 </section>
 
-<!-- 4m 潛點 -->
+<!-- 12m 潛點 -->
 <section class="zone wrap reveal" id="spots">
-  <div class="wm mono">04</div>
-  <div class="lab mono">04.0M — REEF / 珊瑚礁</div>
+  <div class="wm mono">12</div>
+  <div class="lab mono">12.0M — REEF / 珊瑚礁</div>
   <h2>潛點地圖</h2>
-  <p class="lead">泛亞洲 × 世界經典,共 24 點。點浮標 🛟 看季節/看得到什麼/注意/船潛岸潛。</p>
-
-  <div id="map"></div>
-  <p class="hint" style="margin-top:12px">🖐 <b>trackpad 雙指捏合</b>(或 ⌘+滾輪、雙擊、+/-)縮放;滑過國家會亮起顯示名字,<b>點國家就潛進去</b>;發光點=潛點,點開看季節/看得到什麼/注意/船潛岸潛。收錄 24 點,持續增加中 🌏</p>
+  <p class="lead">泛亞洲 × 世界經典，共 <span id="spotCount">—</span> 點。先選月份，看你能去哪。</p>
+  <div class="spot-months" id="spotMonths" aria-label="依月份探索潛點"></div>
+  <div class="spot-pick-title mono">這個月推薦</div>
+  <div class="grid spot-picks" id="spotPicks"><div class="card spot-entry-status">潛點載入中…</div></div>
+  <a class="cta" href="spots/" style="margin-top:18px">打開潛點地圖 →</a>
 </section>
 
-<!-- 5m 實操 -->
+<!-- 18m 實操 -->
 <section class="zone wrap reveal" id="ops">
-  <div class="wm mono">05</div>
-  <div class="lab mono">05.0M — DEEPER / 深一點</div>
+  <div class="wm mono">18</div>
+  <div class="lab mono">18.0M — OWD LIMIT / 初級潛水員上限</div>
   <h2>潛水實操</h2>
   <p class="lead">已經有證、想自己揪團或規劃潛水?下水前先想清楚。</p>
   <div class="grid g4">
@@ -258,10 +248,10 @@
   </div>
 </section>
 
-<!-- 6m 技潛 -->
+<!-- 30m 技潛 -->
 <section class="zone wrap reveal" id="tec">
-  <div class="wm mono">06</div>
-  <div class="lab mono">06.0M — BLUE / 更深藍</div>
+  <div class="wm mono">30</div>
+  <div class="lab mono">30.0M — AOWD LIMIT / 進階潛水員上限</div>
   <h2>技潛 &amp; 專長</h2>
   <p class="lead">玩上癮了?這些讓你潛得更深、更專精。</p>
   <div class="grid g2">
@@ -284,7 +274,7 @@
 
 <section class="zone wrap reveal" id="about">
   <div class="wm mono">40</div>
-  <div class="lab mono">40.0M — SEABED / 海床</div>
+  <div class="lab mono">40.0M — SEABED / 休閒潛水極限</div>
   <h2>關於</h2>
   <div class="about">
     <strong>DiveInOut</strong> 是一本泛亞洲的潛旅生活誌,由潛水員 <strong>Saki</strong> 主理。
@@ -297,7 +287,6 @@
 
 <footer class="wrap">DiveInOut · 潛旅生活誌(暫定名)· 資料引擎 SakiDiveDB<br>內容僅供參考,潛水請以現場專業與官方公告為準</footer>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 // 泡泡(少而淡)
 const bub=document.getElementById("bub");
@@ -306,13 +295,12 @@ for(let i=0;i<10;i++){const b=document.createElement("i");const s=3+Math.random(
   b.style.animationDuration=(7+Math.random()*10)+"s";b.style.animationDelay=(-Math.random()*10)+"s";bub.appendChild(b);}
 
 // 深度章節索引 + scroll-spy 放大
-const SEC=[["news","00","情報"],["rookie","02","新手"],["spots","04","潛點"],["ops","05","實操"],["tec","06","技潛"],["log","35","日誌"],["about","40","關於"]];
+const SEC=[["news","00","情報"],["rookie","05","新手"],["spots","12","潛點"],["ops","18","實操"],["tec","30","技潛"],["log","35","日誌"],["about","40","關於"]];
 const rglow=document.getElementById("rglow"),rlab=document.getElementById("rlab"),rticks=document.getElementById("rticks");
-// 刻度:各層在整頁的相對位置(可點跳轉)
+// 刻度依 0–40m 深度線性定位(可點跳轉)
 function placeTicks(){
-  rticks.innerHTML=SEC.map(([id])=>{
-    const el=document.getElementById(id);if(!el)return"";
-    const p=(el.offsetTop+el.offsetHeight/2)/document.body.scrollHeight*100;
+  rticks.innerHTML=SEC.map(([id,depth])=>{
+    const p=Number(depth)/40*100;
     return `<div class="rtick" data-id="${id}" style="top:${p.toFixed(1)}%"></div>`;
   }).join("");
   rticks.querySelectorAll(".rtick").forEach(t=>t.onclick=()=>document.getElementById(t.dataset.id).scrollIntoView({behavior:"smooth"}));
@@ -369,60 +357,27 @@ function openNews(t,b){const o=document.createElement("div");
 
 // 海洋日誌：每週編輯從已查證資料中挑選，資料由 GitHub Actions 寫入 weekly.json。
 const esc=s=>String(s||"").replace(/[&<>\"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"})[c]);
+
+// 首頁潛點入口：以台北時區當月提供快捷連結與新手推薦。
+const taipeiMonth=Number(new Intl.DateTimeFormat("en-US",{month:"numeric",timeZone:"Asia/Taipei"}).format(new Date()));
+const spotMonths=document.getElementById("spotMonths");
+spotMonths.innerHTML=Array.from({length:12},(_,i)=>`<a class="spot-month${i+1===taipeiMonth?' current':''}" href="spots/?m=${i+1}">${i+1}月</a>`).join("");
+fetch("spots.json").then(r=>{if(!r.ok)throw new Error("spots.json");return r.json()}).then(d=>{
+  document.getElementById("spotCount").textContent=d.spots.length;
+  const eligible=d.spots.filter(s=>s.levelMin==="beginner"&&s.months.includes(taipeiMonth));
+  const picks=[],regions=new Set();
+  eligible.forEach(s=>{if(picks.length<3&&!regions.has(s.region)){picks.push(s);regions.add(s.region)}});
+  eligible.forEach(s=>{if(picks.length<3&&!picks.includes(s))picks.push(s)});
+  document.getElementById("spotPicks").innerHTML=picks.map(s=>`<a class="card spot-pick" href="spots/?m=${taipeiMonth}">
+    <h3>${esc(s.name)}</h3><div class="place">📍 ${esc(s.place)}</div><p class="see">${esc(s.see)}</p></a>`).join("")||'<div class="card spot-entry-status">這個月暫無新手推薦潛點。</div>';
+}).catch(()=>{document.getElementById("spotPicks").innerHTML='<div class="card spot-entry-status">潛點資料暫時無法載入。</div>'});
+
 (async()=>{const G=document.getElementById("weeklyGrid");try{
   const d=await(await fetch("./weekly.json",{cache:"no-store"})).json();
   if(!Array.isArray(d.items)||!d.items.length){G.innerHTML='<div class="card">本週精選整理中，先去看看上方情報 🐟</div>';return;}
   G.innerHTML=d.items.slice(0,3).map(x=>`<article class="card"><div class="emo">${esc(x.emoji||"🌊")}</div><div class="mono" style="color:var(--accent);font-size:11px">${esc(x.category||"本週精選")}</div><h3>${esc(x.title)}</h3><p>${esc(x.summary)}</p><a href="${esc(x.source_url)}" target="_blank" rel="noopener" style="font-size:12px">來源：${esc(x.source_name||"查看資料")} ↗</a></article>`).join("");
 }catch(e){G.innerHTML='<div class="card">本週精選載入中，稍後再來 🐟</div>';}})();
 
-// 風格化暗色世界地圖(無圖磚:海=深色底、陸=向量色塊)
-const map=L.map('map',{scrollWheelZoom:false,zoomSnap:0,zoomDelta:.5,minZoom:2,maxZoom:11,
-  attributionControl:false,worldCopyJump:true}).setView([12,112],2.6);
-const baseStyle={fillColor:"#0c3d4d",fillOpacity:.95,color:"rgba(47,243,224,.16)",weight:1};
-const hotStyle ={fillColor:"#166178",fillOpacity:1,color:"rgba(47,243,224,.6)",weight:1.6};
-const CTY={"Japan":"日本","Taiwan":"台灣","Philippines":"菲律賓","Palau":"帛琉","Indonesia":"印尼",
- "Thailand":"泰國","Malaysia":"馬來西亞","Maldives":"馬爾地夫","Egypt":"埃及","China":"中國",
- "Vietnam":"越南","South Korea":"韓國","Korea":"韓國","Australia":"澳洲","India":"印度","Myanmar":"緬甸",
- "Cambodia":"柬埔寨","Papua New Guinea":"巴布亞紐幾內亞","Sri Lanka":"斯里蘭卡","Saudi Arabia":"沙烏地阿拉伯",
- "Sudan":"蘇丹","Brunei":"汶萊","Singapore":"新加坡","Laos":"寮國","United States of America":"美國","Mexico":"墨西哥"};
-fetch("https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json")
- .then(r=>r.json()).then(gj=>{
-  L.geoJSON(gj,{style:()=>baseStyle,onEachFeature:(f,l)=>{
-    const n=CTY[f.properties.name]||f.properties.name;
-    l.bindTooltip(n,{sticky:true,direction:"top",className:"ctytip",opacity:1});
-    l.on("mouseover",()=>l.setStyle(hotStyle));
-    l.on("mouseout",()=>l.setStyle(baseStyle));
-    l.on("click",()=>map.flyToBounds(l.getBounds(),{padding:[26,26],duration:.9}));
-  }}).addTo(map);
-});
-// 大洋標籤(低倍率顯示,潛入後淡出)
-[["太平洋 PACIFIC",16,152],["印度洋 INDIAN",-10,80],["南海",13,114],["紅海",21,38]].forEach(([t,la,ln])=>
-  L.marker([la,ln],{icon:L.divIcon({className:"olabel",html:t,iconSize:[220,20],iconAnchor:[110,10]}),interactive:false}).addTo(map));
-// 深入層級(z>5.2)浮出暗色細節底圖:世界向量圖沒有小島,潛進沖繩/帛琉/馬爾地夫靠這層
-const tiles=L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}{r}.png',{maxZoom:16,opacity:0});
-map.on("zoomend",()=>{
-  const z=map.getZoom();
-  document.getElementById("map").classList.toggle("zoomed",z>3.8);
-  if(z>5.2){if(!map.hasLayer(tiles))tiles.addTo(map);tiles.setOpacity(Math.min(1,(z-5.2)/1.3));}
-  else if(map.hasLayer(tiles))tiles.setOpacity(0);
-});
-// trackpad 雙指捏合 / ⌘+滾輪 縮放(不搶頁面捲動)
-const mc=map.getContainer();
-mc.addEventListener("wheel",e=>{
-  if(e.ctrlKey||e.metaKey){e.preventDefault();
-    map.setZoomAround(map.mouseEventToLatLng(e),map.getZoom()-e.deltaY*0.02);}
-},{passive:false});
-fetch('spots.json').then(r=>r.json()).then(d=>{
-  d.spots.forEach(s=>{
-    const m=L.marker([s.lat,s.lng],{icon:L.divIcon({className:'buoy',html:'<div class="pin"></div>',iconSize:[16,16],iconAnchor:[8,8]})}).addTo(map);
-    m.bindTooltip(s.name,{direction:'top',offset:[0,-6]});
-    m.bindPopup(`<div class="pop"><h4>${s.name}</h4><div class="pl">📍 ${s.place}</div>
-      <span class="tag">難度 ${s.level}</span><span class="tag">${s.type}</span>
-      <p><b>🗓 最佳季節</b>${s.season}${s.warn?' <span style="color:#ffb24d">⚠️需覆核</span>':''}</p>
-      <p><b>👀 亮點</b>${s.see}</p>
-      <p><b>⚠️ 注意</b>${s.note}</p></div>`);
-  });
-});
 </script>
 </body>
 </html>

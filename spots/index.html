@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>潛點地圖｜DiveInOut</title>
+<meta name="description" content="按月份、潛水程度、入水方式與想看的生物，篩選泛亞洲與世界經典潛點。">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
+<style>
+  :root{
+    --ink:#e9fbff;--dim:#8fb3bf;--accent:#2ff3e0;--pop:#ff5470;
+    --edge:rgba(47,243,224,.28);--card:rgba(255,255,255,.045);
+    --filters-height:150px;--switch-height:53px
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{background:#020a10;scroll-behavior:smooth}
+  body{font-family:"PingFang TC","Noto Sans TC",-apple-system,"Helvetica Neue",sans-serif;
+    color:var(--ink);background:#020a10;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+  button,select{font:inherit}
+  button{cursor:pointer}
+  a{color:var(--accent);text-decoration:none}
+  .mono{font-family:"SFMono-Regular",ui-monospace,Menlo,Consolas,monospace}
+  .app-header{padding:24px max(16px,calc((100vw - 1440px)/2));background:
+    radial-gradient(90% 130% at 84% -30%,rgba(47,243,224,.15),transparent 60%),#020a10}
+  .back{display:inline-flex;align-items:center;min-height:36px;margin-bottom:17px;font-size:13px;font-weight:800;letter-spacing:1px}
+  .lab{display:flex;align-items:center;gap:12px;margin-bottom:8px;color:var(--accent);font-size:12px;
+    font-weight:800;letter-spacing:3px}
+  .lab:before{content:"";width:34px;height:2px;background:var(--accent)}
+  h1{font-size:clamp(40px,6vw,72px);font-weight:900;line-height:1.05;letter-spacing:-.01em}
+  .intro{max-width:630px;margin-top:10px;color:var(--dim);font-size:15px;line-height:1.7}
+
+  .filters{position:sticky;top:0;z-index:1000;background:rgba(2,10,16,.82);backdrop-filter:blur(14px);
+    -webkit-backdrop-filter:blur(14px);border-top:1px solid rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.1)}
+  .filters-inner{max-width:1440px;margin:0 auto;padding:10px 16px;display:grid;
+    grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:7px 18px}
+  .filter-group{display:flex;align-items:center;gap:9px;min-width:0}
+  .filter-group.months,.filter-group.tags{grid-column:1/-1}
+  .filter-label{flex:0 0 72px;color:var(--dim);font-size:11px;font-weight:800;letter-spacing:1px;white-space:nowrap}
+  .chip-track{display:flex;gap:6px;min-width:0;overflow-x:auto;padding:2px;scrollbar-width:none}
+  .chip-track::-webkit-scrollbar{display:none}
+  .chip{flex:0 0 auto;min-height:30px;padding:5px 10px;border:1px solid rgba(255,255,255,.14);border-radius:99px;
+    color:var(--ink);background:transparent;font-size:12px;font-weight:700;white-space:nowrap;transition:.18s}
+  .chip:hover{border-color:var(--edge);background:rgba(47,243,224,.07)}
+  .chip.active{border-color:var(--accent);background:var(--accent);color:#04202c;box-shadow:0 0 15px rgba(47,243,224,.16)}
+  .chip.shortcut{color:var(--accent);border-color:var(--edge)}
+  .filter-actions{display:flex;align-items:center;gap:10px;min-width:0}
+  select{min-height:32px;max-width:190px;padding:4px 30px 4px 10px;border:1px solid rgba(255,255,255,.16);
+    border-radius:8px;color:var(--ink);background:#08202b;color-scheme:dark}
+  .clear{display:none;flex:0 0 auto;padding:5px;border:0;background:none;color:var(--accent);font-size:12px;font-weight:800;white-space:nowrap}
+  .clear.show{display:inline-block}
+
+  .mobile-switch{display:none;position:sticky;top:0;z-index:900;padding:7px 16px;
+    background:rgba(2,10,16,.94);border-bottom:1px solid rgba(255,255,255,.1)}
+  .switch-shell{display:flex;align-items:center;gap:7px;max-width:420px;margin:0 auto;padding:3px;
+    border:1px solid rgba(255,255,255,.13);border-radius:10px;background:rgba(255,255,255,.035)}
+  .view-tabs{display:grid;grid-template-columns:1fr 1fr;flex:0 0 132px}
+  .view-button{min-height:34px;border:0;border-radius:7px;background:transparent;color:var(--dim);font-size:13px;font-weight:800}
+  .view-button.active{background:var(--accent);color:#04202c}
+  .mobile-summary{display:flex;align-items:center;justify-content:flex-end;gap:7px;min-width:0;margin-left:auto}
+  .mobile-count{color:var(--dim);font-size:10px;font-weight:800;white-space:nowrap}.mobile-count strong{color:var(--accent)}
+  .filter-jump{flex:0 0 auto;min-height:30px;padding:4px 7px;border:1px solid var(--edge);border-radius:7px;
+    color:var(--accent);background:transparent;font-size:10px;font-weight:900;white-space:nowrap}
+
+  .workspace{display:grid;grid-template-columns:420px minmax(0,1fr);height:calc(100dvh - var(--filters-height));min-height:480px}
+  .results-pane{min-width:0;overflow-y:auto;border-right:1px solid rgba(255,255,255,.1);background:#020a10}
+  .results-head{position:sticky;top:0;z-index:5;padding:15px 16px 10px;background:rgba(2,10,16,.94);border-bottom:1px solid rgba(255,255,255,.07)}
+  .result-count{font-size:14px;font-weight:800}
+  .result-count strong{color:var(--accent)}
+  .cards{display:grid;gap:10px;padding:12px}
+  .spot-card{padding:15px;background:var(--card);border:1px solid rgba(255,255,255,.1);border-radius:12px;
+    outline:none;transition:border-color .2s,background .2s,transform .2s,box-shadow .2s}
+  .spot-card:hover,.spot-card.marker-active{border-color:var(--edge);background:rgba(47,243,224,.06)}
+  .spot-card:focus-visible{border-color:var(--accent);box-shadow:0 0 0 2px rgba(47,243,224,.2)}
+  .spot-card.flash{animation:card-flash 1.5s ease}
+  @keyframes card-flash{0%,100%{box-shadow:none}25%,70%{border-color:var(--accent);box-shadow:0 0 24px rgba(47,243,224,.2)}}
+  .card-top{display:flex;align-items:flex-start;gap:10px}
+  .spot-card h2{min-width:0;font-size:17px;font-weight:900;line-height:1.2;letter-spacing:-.01em}
+  .level-badge{flex:0 0 auto;margin-left:auto;padding:4px 8px;border-radius:99px;color:#04202c;font-size:10px;font-weight:900;white-space:nowrap}
+  .level-badge.beginner{background:#2ff3e0}.level-badge.intermediate{background:#ffb24d}.level-badge.advanced{background:#ff5470}
+  .place{margin-top:7px;color:var(--dim);font-size:12px;line-height:1.45}
+  .meta{display:flex;align-items:center;flex-wrap:wrap;gap:5px;margin-top:10px}
+  .entry-badge{padding:2px 7px;border:1px solid var(--edge);border-radius:99px;color:var(--accent);font-size:10px;font-weight:800}
+  .tag-icons{display:flex;gap:5px;margin-left:4px;font-size:15px}
+  .month-chart{margin-top:12px}
+  .month-bars,.month-labels{display:grid;grid-template-columns:repeat(12,1fr);gap:2px}
+  .month-bar{height:6px;border-radius:2px;background:rgba(255,255,255,.08)}
+  .month-bar.on{background:rgba(47,243,224,.85)}
+  .month-bar.selected{outline:1px solid #fff;outline-offset:1px}
+  .month-labels{margin-top:5px;color:var(--dim);font-size:10px;text-align:center}
+  .see{display:-webkit-box;margin-top:10px;overflow:hidden;color:var(--ink);font-size:13px;line-height:1.55;
+    -webkit-box-orient:vertical;-webkit-line-clamp:2}
+  .card-foot{display:flex;align-items:center;gap:10px;min-height:25px;margin-top:9px}
+  .warning{color:#ffca7a;font-size:11px;font-weight:800}
+  .map-link{margin-left:auto;padding:4px 0;border:0;background:none;color:var(--accent);font-size:11px;font-weight:900}
+  .empty{padding:42px 22px;text-align:center;color:var(--dim);line-height:1.7}
+  .empty .chip{display:block;margin:16px auto 0;color:#04202c;background:var(--accent);border-color:var(--accent)}
+  .data-note{padding:17px 16px 24px;color:var(--dim);font-size:11px;line-height:1.7;border-top:1px solid rgba(255,255,255,.07)}
+
+  .map-pane{position:sticky;top:var(--filters-height);height:100%;min-width:0;background:#04202c}
+  #map{width:100%;height:100%;background:#04202c}
+  .leaflet-tile-pane{filter:sepia(1) hue-rotate(150deg) saturate(1.4) brightness(.85)}
+  .leaflet-container{font-family:inherit}
+  .leaflet-control-attribution{background:rgba(2,10,16,.72)!important;color:var(--dim)!important}
+  .leaflet-control-attribution a{color:var(--accent)!important}
+  .leaflet-bar a{background:#08202b!important;color:var(--ink)!important;border-color:rgba(255,255,255,.12)!important}
+  .leaflet-popup-content-wrapper{background:rgba(4,26,36,.9)!important;backdrop-filter:blur(10px);border:1px solid var(--edge);
+    border-radius:14px;box-shadow:0 16px 44px -16px rgba(0,0,0,.7);color:var(--ink)!important}
+  .leaflet-popup-tip{background:rgba(4,26,36,.9)!important}
+  .leaflet-popup-close-button{color:var(--dim)!important}
+  .pop{min-width:220px;color:var(--ink)}
+  .pop h3{margin:0 0 3px;font-size:16px;line-height:1.2}.pop .pop-place{margin-bottom:7px;color:var(--dim);font-size:12px}
+  .pop .pop-badge{display:inline-block;margin:0 4px 5px 0;padding:2px 8px;border:1px solid var(--edge);border-radius:99px;
+    color:var(--accent);font-size:10px;font-weight:800}
+  .pop p{margin:6px 0;padding-top:6px;border-top:1px dashed rgba(255,255,255,.1);color:#cfe4ea;font-size:12px;line-height:1.6}
+  .pop b{margin-right:6px;color:var(--accent);white-space:nowrap}
+  .buoy{background:none!important;border:0!important}
+  .buoy .pin{width:15px;height:15px;border:2px solid #eafcff;border-radius:50%;background:var(--accent);
+    box-shadow:0 0 0 4px rgba(47,243,224,.22),0 0 16px var(--accent);transition:transform .18s,box-shadow .18s}
+  .buoy.marker-hot .pin{transform:scale(1.55);box-shadow:0 0 0 6px rgba(47,243,224,.28),0 0 26px 6px var(--accent)}
+  .marker-cluster .spot-cluster{display:flex;align-items:center;justify-content:center;margin:0;border:1.5px solid var(--accent);border-radius:50%;
+    background:rgba(47,243,224,.18);box-shadow:0 0 18px rgba(47,243,224,.3);color:#fff;font:800 12px "SFMono-Regular",monospace;
+    transition:transform .18s,box-shadow .18s}
+  .marker-cluster{background:transparent!important}
+  .marker-cluster.marker-hot .spot-cluster{transform:scale(1.18);box-shadow:0 0 26px 5px rgba(47,243,224,.45)}
+  .load-error{display:flex;align-items:center;justify-content:center;height:100%;padding:24px;color:var(--dim);text-align:center}
+
+  @media(max-width:959px){
+    :root{--filters-height:220px}
+    .app-header{padding:20px 16px 24px}.back{margin-bottom:12px}h1{font-size:42px}.intro{font-size:14px}
+    .filters{position:static}
+    .filters-inner{display:block;padding:8px 16px}
+    .filter-group{height:39px;gap:6px}.filter-group.months,.filter-group.tags{display:flex}
+    .filter-label{flex-basis:66px}.chip-track{flex:1}.chip{min-height:28px;padding:4px 9px}
+    .filter-actions{flex:1;overflow:hidden}select{max-width:150px;min-width:118px}
+    .mobile-switch{display:block}
+    .workspace{display:block;height:auto;min-height:0}
+    .results-pane{display:block;overflow:visible;border-right:0}.results-head{display:none;position:static;top:auto}
+    .map-pane{display:none;position:relative;top:auto;height:calc(100dvh - var(--switch-height));min-height:280px}
+    body.view-map .results-pane{display:none}body.view-map .map-pane{display:block}
+    .cards{padding:12px 16px}.month-labels span{visibility:hidden}
+    .month-labels span:nth-child(1),.month-labels span:nth-child(4),.month-labels span:nth-child(7),
+    .month-labels span:nth-child(10),.month-labels span:nth-child(12){visibility:visible}
+  }
+  @media(min-width:960px){.mobile-only{display:none!important}}
+</style>
+</head>
+<body class="view-list">
+<header class="app-header">
+  <a class="back mono" href="../">← DiveInOut</a>
+  <div class="lab mono">DIVE SPOTS / 潛點</div>
+  <h1>潛點地圖</h1>
+  <p class="intro">選月份、程度、想看的，找出你能去的潛點。</p>
+</header>
+
+<section class="filters" id="filters" aria-label="潛點篩選">
+  <div class="filters-inner">
+    <div class="filter-group months">
+      <div class="filter-label mono">月份</div>
+      <div class="chip-track" data-group="month">
+        <button class="chip shortcut" id="thisMonth" type="button">這個月</button>
+        <button class="chip active" type="button" data-filter="month" data-value="">全部</button>
+        <button class="chip" type="button" data-filter="month" data-value="1">1月</button><button class="chip" type="button" data-filter="month" data-value="2">2月</button>
+        <button class="chip" type="button" data-filter="month" data-value="3">3月</button><button class="chip" type="button" data-filter="month" data-value="4">4月</button>
+        <button class="chip" type="button" data-filter="month" data-value="5">5月</button><button class="chip" type="button" data-filter="month" data-value="6">6月</button>
+        <button class="chip" type="button" data-filter="month" data-value="7">7月</button><button class="chip" type="button" data-filter="month" data-value="8">8月</button>
+        <button class="chip" type="button" data-filter="month" data-value="9">9月</button><button class="chip" type="button" data-filter="month" data-value="10">10月</button>
+        <button class="chip" type="button" data-filter="month" data-value="11">11月</button><button class="chip" type="button" data-filter="month" data-value="12">12月</button>
+      </div>
+    </div>
+    <div class="filter-group">
+      <div class="filter-label mono">我的程度</div>
+      <div class="chip-track" data-group="level">
+        <button class="chip active" type="button" data-filter="level" data-value="">全部</button>
+        <button class="chip" type="button" data-filter="level" data-value="beginner">剛拿 OWD / 新手</button>
+        <button class="chip" type="button" data-filter="level" data-value="intermediate">有 AOWD</button>
+        <button class="chip" type="button" data-filter="level" data-value="advanced">進階</button>
+      </div>
+    </div>
+    <div class="filter-group">
+      <div class="filter-label mono">入水方式</div>
+      <div class="chip-track" data-group="entry">
+        <button class="chip" type="button" data-filter="entry" data-value="shore">岸潛</button>
+        <button class="chip" type="button" data-filter="entry" data-value="boat">船潛</button>
+        <button class="chip" type="button" data-filter="entry" data-value="liveaboard">船宿</button>
+        <button class="chip" type="button" data-filter="entry" data-value="snorkel">可浮潛</button>
+      </div>
+    </div>
+    <div class="filter-group tags">
+      <div class="filter-label mono">想看</div>
+      <div class="chip-track" data-group="tag">
+        <button class="chip" type="button" data-filter="tag" data-value="turtle">🐢 海龜</button>
+        <button class="chip" type="button" data-filter="tag" data-value="shark">🦈 鯊魚</button>
+        <button class="chip" type="button" data-filter="tag" data-value="manta">🪽 鬼蝠魟</button>
+        <button class="chip" type="button" data-filter="tag" data-value="whaleshark">🐋 鯨鯊</button>
+        <button class="chip" type="button" data-filter="tag" data-value="macro">🔍 微距</button>
+        <button class="chip" type="button" data-filter="tag" data-value="wreck">⚓ 沉船</button>
+        <button class="chip" type="button" data-filter="tag" data-value="school">🐟 魚群風暴</button>
+        <button class="chip" type="button" data-filter="tag" data-value="terrain">🪨 地形洞穴</button>
+        <button class="chip" type="button" data-filter="tag" data-value="coral">🪸 珊瑚</button>
+        <button class="chip" type="button" data-filter="tag" data-value="mola">🌕 翻車魚</button>
+      </div>
+    </div>
+    <div class="filter-group">
+      <label class="filter-label mono" for="region">地區</label>
+      <div class="filter-actions">
+        <select id="region">
+          <option value="">全部地區</option><option value="okinawa">沖繩</option><option value="taiwan">台灣</option>
+          <option value="philippines">菲律賓</option><option value="palau">帛琉</option><option value="indonesia">印尼</option>
+          <option value="thailand">泰國</option><option value="malaysia">馬來西亞</option><option value="maldives">馬爾地夫</option><option value="egypt">埃及</option>
+        </select>
+        <button class="clear" id="clearFilters" type="button">清除篩選</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<nav class="mobile-switch" id="viewSwitch" aria-label="檢視模式">
+  <div class="switch-shell">
+    <div class="view-tabs">
+      <button class="view-button active" type="button" data-view="list">清單</button>
+      <button class="view-button" type="button" data-view="map">地圖</button>
+    </div>
+    <div class="mobile-summary">
+      <div class="mobile-count" id="mobileResultCount">載入中…</div>
+      <button class="filter-jump" id="backToFilters" type="button">篩選 ↑</button>
+    </div>
+  </div>
+</nav>
+
+<main class="workspace">
+  <section class="results-pane" id="resultsPane" aria-label="潛點清單">
+    <div class="results-head"><div class="result-count" id="resultCount">載入潛點中…</div></div>
+    <div class="cards" id="cards"></div>
+    <footer class="data-note" id="dataNote">季節與規範會變動，標 ⚠️ 者出發前請向當地潛店確認。座標為概略中心點。</footer>
+  </section>
+  <section class="map-pane" aria-label="潛點地圖">
+    <div id="map"></div>
+  </section>
+</main>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+<script>
+const LEVELS={beginner:"新手 OK",intermediate:"建議 AOWD",advanced:"進階（強流/深潛經驗）"};
+const ENTRIES={shore:"岸潛",boat:"船潛",liveaboard:"船宿",snorkel:"可浮潛"};
+const TAGS={turtle:["🐢","海龜"],shark:["🦈","鯊魚"],manta:["🪽","鬼蝠魟"],whaleshark:["🐋","鯨鯊"],
+  macro:["🔍","微距"],wreck:["⚓","沉船"],school:["🐟","魚群風暴"],terrain:["🪨","地形洞穴"],coral:["🪸","珊瑚"],mola:["🌕","翻車魚"]};
+const VALID={level:new Set(["beginner","intermediate","advanced"]),entry:new Set(Object.keys(ENTRIES)),
+  tag:new Set(Object.keys(TAGS)),region:new Set(["okinawa","taiwan","philippines","palau","indonesia","thailand","malaysia","maldives","egypt"])};
+const levelRank={beginner:0,intermediate:1,advanced:2};
+const currentMonth=Number(new Intl.DateTimeFormat("en-US",{month:"numeric",timeZone:"Asia/Taipei"}).format(new Date()));
+const state={month:null,level:null,entries:new Set(),tags:new Set(),region:null};
+let allSpots=[],filteredSpots=[],updated="",map,clusters,markers=new Map(),mapReady=false;
+const mobileQuery=matchMedia("(max-width: 959px)");
+const esc=value=>String(value??"").replace(/[&<>\"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"})[c]);
+
+function restoreState(){
+  const q=new URLSearchParams(location.search);const month=Number(q.get("m"));
+  state.month=month>=1&&month<=12?month:null;
+  state.level=VALID.level.has(q.get("lv"))?q.get("lv"):null;
+  (q.get("e")||"").split(",").filter(x=>VALID.entry.has(x)).forEach(x=>state.entries.add(x));
+  (q.get("t")||"").split(",").filter(x=>VALID.tag.has(x)).forEach(x=>state.tags.add(x));
+  state.region=VALID.region.has(q.get("r"))?q.get("r"):null;
+}
+function syncUrl(){
+  const q=new URLSearchParams();
+  if(state.month)q.set("m",state.month);if(state.level)q.set("lv",state.level);
+  if(state.entries.size)q.set("e",[...state.entries].join(","));if(state.tags.size)q.set("t",[...state.tags].join(","));
+  if(state.region)q.set("r",state.region);
+  history.replaceState(null,"",location.pathname+(q.size?"?"+q.toString().replace(/%2C/gi,","):"")+location.hash);
+}
+function hasFilters(){return Boolean(state.month||state.level||state.entries.size||state.tags.size||state.region)}
+function updateControls(){
+  document.querySelectorAll('[data-filter="month"]').forEach(b=>b.classList.toggle("active",String(state.month||"")===b.dataset.value));
+  document.querySelectorAll('[data-filter="level"]').forEach(b=>b.classList.toggle("active",String(state.level||"")===b.dataset.value));
+  document.querySelectorAll('[data-filter="entry"]').forEach(b=>b.classList.toggle("active",state.entries.has(b.dataset.value)));
+  document.querySelectorAll('[data-filter="tag"]').forEach(b=>b.classList.toggle("active",state.tags.has(b.dataset.value)));
+  document.getElementById("region").value=state.region||"";
+  document.getElementById("clearFilters").classList.toggle("show",hasFilters());
+}
+function matches(s){
+  if(state.month&&!s.months.includes(state.month))return false;
+  if(state.level==="beginner"&&s.levelMin!=="beginner")return false;
+  if(state.level==="intermediate"&&!(["beginner","intermediate"].includes(s.levelMin)))return false;
+  if(state.entries.size&&![...state.entries].some(x=>s.entry.includes(x)))return false;
+  if(state.tags.size&&![...state.tags].some(x=>s.tags.includes(x)))return false;
+  return !state.region||s.region===state.region;
+}
+function monthChart(s){
+  const bars=Array.from({length:12},(_,i)=>`<span class="month-bar${s.months.includes(i+1)?' on':''}${state.month===i+1?' selected':''}"></span>`).join("");
+  const labels=Array.from({length:12},(_,i)=>`<span>${i+1}</span>`).join("");
+  return `<div class="month-chart" aria-label="最佳月份：${s.months.join('、')}月"><div class="month-bars">${bars}</div><div class="month-labels mono">${labels}</div></div>`;
+}
+function cardHtml(s){
+  const entries=s.entry.map(x=>`<span class="entry-badge">${ENTRIES[x]}</span>`).join("");
+  const tags=s.tags.map(x=>`<span title="${TAGS[x][1]}">${TAGS[x][0]}</span>`).join("");
+  return `<article class="spot-card" id="card-${esc(s.id)}" data-id="${esc(s.id)}" tabindex="0">
+    <div class="card-top"><h2>${esc(s.name)}</h2><span class="level-badge ${s.levelMin}">${LEVELS[s.levelMin]}</span></div>
+    <div class="place">📍 ${esc(s.place)}</div><div class="meta">${entries}<span class="tag-icons">${tags}</span></div>
+    ${monthChart(s)}<p class="see">${esc(s.see)}</p><div class="card-foot">${s.warn?'<span class="warning">⚠️ 季節需覆核</span>':''}
+    <button class="map-link" type="button" data-map-id="${esc(s.id)}">在地圖上看 →</button></div></article>`;
+}
+function render(){
+  filteredSpots=allSpots.filter(matches).sort((a,b)=>(levelRank[a.levelMin]-levelRank[b.levelMin])||a.name.localeCompare(b.name,"zh-Hant"));
+  document.getElementById("resultCount").innerHTML=`符合 <strong>${filteredSpots.length}</strong> / ${allSpots.length} 個潛點`;
+  document.getElementById("mobileResultCount").innerHTML=`符合 <strong>${filteredSpots.length}</strong> / ${allSpots.length}`;
+  const cards=document.getElementById("cards");
+  cards.innerHTML=filteredSpots.length?filteredSpots.map(cardHtml).join(""):`<div class="empty">這個組合目前沒有潛點。試試放寬月份或程度？
+    <button class="chip" type="button" data-empty-clear>清除篩選</button></div>`;
+  syncUrl();updateControls();updateMap();
+}
+function popupHtml(s){
+  return `<div class="pop"><h3>${esc(s.name)}</h3><div class="pop-place">📍 ${esc(s.place)}</div>
+    <span class="pop-badge">難度 ${esc(s.level)}</span>${s.entry.map(x=>`<span class="pop-badge">${ENTRIES[x]}</span>`).join("")}
+    <p><b>🗓 最佳季節</b>${esc(s.season)}${s.warn?' <span class="warning">⚠️需覆核</span>':''}</p>
+    <p><b>👀 亮點</b>${esc(s.see)}</p><p><b>⚠️ 注意</b>${esc(s.note)}</p></div>`;
+}
+function initMap(){
+  map=L.map("map",{scrollWheelZoom:false,touchZoom:true,minZoom:2,maxZoom:16,worldCopyJump:true}).setView([15,110],3);
+  map.attributionControl.setPrefix(false);
+  L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}",{
+    maxZoom:16,attribution:"Tiles &copy; Esri"}).addTo(map);
+  clusters=L.markerClusterGroup({maxClusterRadius:44,showCoverageOnHover:false,spiderfyOnMaxZoom:true,
+    iconCreateFunction:c=>{const count=c.getChildCount(),size=count<10?32:count<20?38:44;
+      return L.divIcon({html:`<div class="spot-cluster" style="width:${size}px;height:${size}px">${count}</div>`,
+        className:"marker-cluster",iconSize:[size,size]})}}).addTo(map);
+  const buoy=L.divIcon({className:"buoy",html:'<div class="pin"></div>',iconSize:[15,15],iconAnchor:[7,7],popupAnchor:[0,-8]});
+  allSpots.forEach(s=>{const marker=L.marker([s.lat,s.lng],{icon:buoy,title:s.name}).bindPopup(popupHtml(s));
+    marker.on("mouseover",()=>document.getElementById(`card-${s.id}`)?.classList.add("marker-active"));
+    marker.on("mouseout",()=>document.getElementById(`card-${s.id}`)?.classList.remove("marker-active"));
+    marker.on("click",()=>highlightCard(s.id));markers.set(s.id,marker)});
+  const container=map.getContainer();
+  container.addEventListener("wheel",e=>{if(e.ctrlKey||e.metaKey){e.preventDefault();
+    map.setZoomAround(map.mouseEventToLatLng(e),map.getZoom()-e.deltaY*.02)}},{passive:false});
+  mapReady=true;updateMap();
+}
+function mapIsVisible(){return !mobileQuery.matches||document.body.classList.contains("view-map")}
+function updateMap(){
+  if(!mapReady)return;clusters.clearLayers();filteredSpots.forEach(s=>clusters.addLayer(markers.get(s.id)));
+  if(filteredSpots.length&&mapIsVisible()){
+    map.invalidateSize(false);map.fitBounds(L.latLngBounds(filteredSpots.map(s=>[s.lat,s.lng])),{padding:[40,40],maxZoom:7});
+  }
+}
+function highlightCard(id){
+  const card=document.getElementById(`card-${id}`);if(!card)return;
+  card.scrollIntoView({behavior:"smooth",block:"center"});card.classList.remove("flash");void card.offsetWidth;card.classList.add("flash");
+  setTimeout(()=>card.classList.remove("flash"),1500);
+}
+function setView(view,{scroll=true}={}){
+  document.body.classList.toggle("view-map",view==="map");document.body.classList.toggle("view-list",view==="list");
+  document.querySelectorAll("[data-view]").forEach(b=>b.classList.toggle("active",b.dataset.view===view));
+  if(view==="map"&&mapReady)setTimeout(()=>{map.invalidateSize();if(filteredSpots.length)map.fitBounds(
+    L.latLngBounds(filteredSpots.map(s=>[s.lat,s.lng])),{padding:[40,40],maxZoom:7})},50);
+  if(scroll&&mobileQuery.matches)document.getElementById("viewSwitch").scrollIntoView({behavior:"smooth",block:"start"});
+}
+function focusSpot(id){
+  const s=allSpots.find(x=>x.id===id),marker=markers.get(id);if(!s||!marker)return;
+  if(mobileQuery.matches)setView("map");
+  setTimeout(()=>{map.invalidateSize();map.once("moveend",()=>map.openPopup(marker.getPopup().setLatLng([s.lat,s.lng])));
+    map.flyTo([s.lat,s.lng],9,{duration:.8})},mobileQuery.matches?100:0);
+}
+function hotMarker(id,on){const marker=markers.get(id),visible=marker&&clusters.getVisibleParent(marker);
+  const el=visible?.getElement();if(el)el.classList.toggle("marker-hot",on)}
+function clearAll(){state.month=null;state.level=null;state.entries.clear();state.tags.clear();state.region=null;render()}
+function measureChrome(){document.documentElement.style.setProperty("--filters-height",document.getElementById("filters").offsetHeight+"px");
+  document.documentElement.style.setProperty("--switch-height",document.getElementById("viewSwitch").offsetHeight+"px")}
+
+document.querySelectorAll("[data-filter]").forEach(button=>button.addEventListener("click",()=>{
+  const type=button.dataset.filter,value=button.dataset.value;
+  if(type==="month")state.month=value?Number(value):null;
+  else if(type==="level")state.level=value||null;
+  else{const set=type==="entry"?state.entries:state.tags;set.has(value)?set.delete(value):set.add(value)}render();
+}));
+document.getElementById("thisMonth").addEventListener("click",()=>{state.month=currentMonth;render()});
+document.getElementById("region").addEventListener("change",e=>{state.region=e.target.value||null;render()});
+document.getElementById("clearFilters").addEventListener("click",clearAll);
+document.getElementById("backToFilters").addEventListener("click",()=>document.getElementById("filters").scrollIntoView({behavior:"smooth",block:"start"}));
+document.getElementById("cards").addEventListener("click",e=>{if(e.target.closest("[data-empty-clear]")){clearAll();return}
+  const card=e.target.closest(".spot-card");if(card)focusSpot(card.dataset.id)});
+document.getElementById("cards").addEventListener("keydown",e=>{const card=e.target.closest(".spot-card");
+  if(card&&(e.key==="Enter"||e.key===" ")){e.preventDefault();focusSpot(card.dataset.id)}});
+document.getElementById("cards").addEventListener("mouseover",e=>{const card=e.target.closest(".spot-card");if(card)hotMarker(card.dataset.id,true)});
+document.getElementById("cards").addEventListener("mouseout",e=>{const card=e.target.closest(".spot-card");
+  if(card&&!card.contains(e.relatedTarget))hotMarker(card.dataset.id,false)});
+document.querySelectorAll("[data-view]").forEach(b=>b.addEventListener("click",()=>setView(b.dataset.view)));
+new ResizeObserver(measureChrome).observe(document.getElementById("filters"));
+addEventListener("resize",()=>{measureChrome();if(mapReady)setTimeout(()=>map.invalidateSize(),50)});
+
+restoreState();updateControls();measureChrome();
+fetch("../spots.json").then(r=>{if(!r.ok)throw new Error("spots.json");return r.json()}).then(data=>{
+  allSpots=data.spots;updated=data.updated;document.getElementById("dataNote").textContent=
+    `季節與規範會變動，標 ⚠️ 者出發前請向當地潛店確認。座標為概略中心點。資料更新：${updated}`;
+  render();initMap();
+}).catch(()=>{
+  document.getElementById("resultCount").textContent="潛點資料載入失敗";
+  document.getElementById("mobileResultCount").textContent="載入失敗";
+  document.getElementById("cards").innerHTML='<div class="empty">目前無法讀取潛點資料，請稍後再試。</div>';
+  document.getElementById("map").innerHTML='<div class="load-error">地圖資料暫時無法載入。</div>';
+});
+</script>
+</body>
+</html>
