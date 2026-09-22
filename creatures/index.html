@@ -3,234 +3,89 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>水下生物圖鑑 ｜ DiveInOut</title>
-<meta name="description" content="往下潛,看看不同深度住著誰。剪影自由地游著,掃上去牠就現形。">
+<title>水下生物圖鑑｜DiveInOut</title>
+<meta name="description" content="選你的程度和要去的地方，看看下水會遇到誰。">
 <style>
-  :root{--ink:#e9fbff;--dim:#8fb3bf;--accent:#2ff3e0;--edge:rgba(47,243,224,.28)}
-  *{box-sizing:border-box;margin:0;padding:0}
-  html{scroll-behavior:smooth}
-  body{font-family:"PingFang TC","Noto Sans TC",-apple-system,"Helvetica Neue",sans-serif;
-       color:var(--ink);background:#010a10;overflow-x:hidden;-webkit-font-smoothing:antialiased}
-  a{color:var(--accent);text-decoration:none}
-  .mono{font-family:ui-monospace,Menlo,Consolas,monospace}
-  .sea{background:linear-gradient(180deg,#0b4152 0%,#093646 10%,#072b38 24%,#05202b 40%,
-     #041822 56%,#031017 72%,#02090e 88%,#010a10 100%)}
-  .grain:before{content:"";position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.5;
-     background:repeating-linear-gradient(180deg,rgba(255,255,255,.012) 0 2px,transparent 2px 4px)}
-  .bubbles{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
-  .bubbles i{position:absolute;bottom:-40px;border-radius:50%;background:rgba(47,243,224,.1);animation:rise linear infinite}
-  @keyframes rise{to{transform:translateY(-105vh);opacity:0}}
-  .wrap{max-width:980px;margin:0 auto;padding:0 22px;position:relative;z-index:3}
-
-  .depth{position:fixed;top:50%;right:16px;transform:translateY(-50%);z-index:10;text-align:center;
-     font-variant-numeric:tabular-nums;opacity:.85;font-size:11px;letter-spacing:1px;color:var(--dim)}
-  .depth b{display:block;font-size:19px;font-weight:800;color:#fff}
-  .depth .line{width:2px;height:110px;margin:6px auto;background:linear-gradient(rgba(47,243,224,.5),transparent)}
-
-  header.top{padding:90px 0 26px;position:relative}
-  .kick{font-size:12px;letter-spacing:5px;color:var(--accent);font-weight:800;margin-bottom:12px}
-  header.top h1{font-size:clamp(34px,8vw,64px);font-weight:900;letter-spacing:-1px;line-height:1}
-  header.top p{color:var(--dim);margin-top:14px;font-weight:300;max-width:520px;line-height:1.8}
-  .back{display:inline-block;margin-top:16px;font-size:13px}
-  .cue{margin-top:30px;font-size:12px;letter-spacing:2px;color:var(--dim);animation:bob 2s infinite}
-  @keyframes bob{50%{transform:translateY(8px)}}
-
-  section.zone{padding:52px 0 8px;position:relative}
-  .zfade{opacity:0;transition:opacity .9s ease}
-  .zfade.in{opacity:1}
-  .lab{display:flex;align-items:center;gap:12px;font-size:12px;letter-spacing:3px;font-weight:800;color:var(--accent);margin-bottom:6px}
-  .lab:before{content:"";width:34px;height:2px;background:var(--accent)}
-  .zone h2{font-size:clamp(24px,5vw,40px);font-weight:900;letter-spacing:-1px}
-  .zone .zdesc{color:var(--dim);max-width:560px;margin:10px 0 8px;font-weight:300;line-height:1.75}
-
-  /* 自由漂游的水域 */
-  .band{position:relative;margin-top:8px}
-  .crt{position:absolute;width:130px;text-align:center;cursor:pointer;-webkit-tap-highlight-color:transparent;
-     animation:swim var(--dur,16s) ease-in-out infinite alternate;will-change:transform}
-  @keyframes swim{from{transform:translate(0,0)}to{transform:translate(var(--dx,24px),var(--dy,-14px))}}
-  .crt:hover,.crt.pin{animation-play-state:paused;z-index:50}
-  .fig{height:auto;display:flex;align-items:center;justify-content:center;
-     animation:float 5.5s ease-in-out infinite;transition:transform .35s}
-  .crt:nth-child(2n) .fig{animation-delay:-1.8s}.crt:nth-child(3n) .fig{animation-delay:-3.4s}
-  @keyframes float{50%{transform:translateY(-8px)}}
-  .crt:hover .fig,.crt.pin .fig{transform:scale(1.15)}
-  /* 剪影 → 現形 */
-  .fig svg{overflow:visible;filter:drop-shadow(0 3px 8px rgba(0,0,0,.35))}
-  .fig svg path,.fig svg circle{fill:#d9eef3;opacity:.88;transition:fill .45s,opacity .45s}
-  .crt:hover .fig svg path,.crt.pin .fig svg path,
-  .crt:hover .fig svg circle,.crt.pin .fig svg circle{fill:var(--accent);opacity:1}
-  .crt:hover .fig svg,.crt.pin .fig svg{filter:drop-shadow(0 0 16px rgba(47,243,224,.4))}
-  .crt>b{display:block;font-size:14px;margin-top:2px}
-  .crt>span{font-size:11px;color:var(--dim)}
-
-  /* 半透明資訊卡:順滑展開 */
-  .info{position:absolute;top:calc(100% + 10px);left:50%;width:min(300px,86vw);
-     transform:translate(-50%,10px) scale(.94);transform-origin:top center;opacity:0;pointer-events:none;
-     background:rgba(3,22,31,.82);backdrop-filter:blur(10px);border:1px solid var(--edge);border-radius:16px;
-     padding:16px 17px;text-align:left;z-index:60;transition:.38s cubic-bezier(.2,.7,.2,1);
-     box-shadow:0 22px 50px -18px rgba(0,0,0,.8)}
-  .crt:hover .info,.crt.pin .info{opacity:1;transform:translate(-50%,0) scale(1);pointer-events:auto}
-  .info h4{font-size:17px;color:#fff}
-  .info .meta{font-size:11px;color:var(--accent);font-family:monospace;margin:2px 0 10px;letter-spacing:1px}
-  .info p{font-size:12.5px;color:#cfe4ea;font-weight:300;line-height:1.7;margin:7px 0}
-  .info p b{color:var(--accent);font-weight:800;margin-right:6px}
-  .info .x{display:none;position:absolute;top:8px;right:12px;font-size:20px;color:var(--dim);
-     background:none;border:0;cursor:pointer}
-  @media(max-width:640px){
-    .crt{animation:none;width:112px}
-    .crt:hover .info{opacity:0;pointer-events:none}
-    .info{position:fixed;left:12px;right:12px;bottom:12px;top:auto;width:auto;
-       transform:translateY(16px);transform-origin:bottom center}
-    .crt.pin .info{opacity:1;transform:none;pointer-events:auto}
-    .info .x{display:block}
-  }
-  footer{padding:60px 22px 70px;text-align:center;font-size:12px;color:var(--dim)}
+:root{--ink:#e9fbff;--dim:#8fb3bf;--accent:#2ff3e0;--edge:rgba(47,243,224,.28);--card:rgba(255,255,255,.045)}
+*{box-sizing:border-box;margin:0;padding:0}html{background:#020a10;scroll-behavior:smooth}
+body{min-width:0;overflow-x:hidden;background:#020a10;color:var(--ink);font-family:"PingFang TC","Noto Sans TC",-apple-system,"Helvetica Neue",sans-serif;-webkit-font-smoothing:antialiased}body.modal-open{overflow:hidden}
+button,select{font:inherit}button{cursor:pointer}a{color:var(--accent);text-decoration:none}.mono{font-family:"SFMono-Regular",ui-monospace,Menlo,Consolas,monospace}.wrap{width:min(1440px,100%);margin:0 auto;padding-inline:24px}
+.page-head{padding-block:28px 42px;background:radial-gradient(80% 150% at 82% -30%,rgba(47,243,224,.13),transparent 60%),#020a10}.back{display:inline-flex;align-items:center;min-height:36px;margin-bottom:20px;font-size:13px;font-weight:800;letter-spacing:1px}.lab{display:flex;align-items:center;gap:12px;margin-bottom:9px;color:var(--accent);font-size:12px;font-weight:800;letter-spacing:3px}.lab:before{content:"";width:34px;height:2px;background:var(--accent)}
+h1{font-size:clamp(42px,7vw,76px);font-weight:900;line-height:1.05;letter-spacing:-.01em}.intro{max-width:620px;margin-top:12px;color:var(--dim);font-size:15px;line-height:1.75}
+.filters{position:sticky;top:0;z-index:30;border-block:1px solid rgba(255,255,255,.09);background:rgba(2,10,16,.82);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}.filters-inner{display:flex;align-items:center;gap:18px;min-height:64px}.filter-group{display:flex;align-items:center;gap:8px;min-width:0}.filter-label{flex:0 0 auto;color:var(--dim);font-size:11px;font-weight:800;letter-spacing:1px;white-space:nowrap}.chip-track{display:flex;gap:6px;min-width:0;overflow-x:auto;padding:3px 1px;scrollbar-width:none}.chip-track::-webkit-scrollbar{display:none}
+.filter-chip{flex:0 0 auto;min-height:32px;padding:5px 11px;border:1px solid rgba(255,255,255,.15);border-radius:99px;background:transparent;color:var(--ink);font-size:12px;font-weight:800;white-space:nowrap;transition:.18s}.filter-chip:hover{border-color:var(--edge);background:rgba(47,243,224,.07)}.filter-chip.active{border-color:var(--accent);background:var(--accent);color:#04202c;box-shadow:0 0 16px rgba(47,243,224,.15)}
+select{min-height:34px;max-width:150px;padding:5px 30px 5px 10px;border:1px solid rgba(255,255,255,.16);border-radius:8px;background:#08202b;color:var(--ink);color-scheme:dark}.filter-status{display:flex;align-items:center;gap:10px;margin-left:auto;white-space:nowrap}.result-count{color:var(--dim);font-size:12px;font-weight:800}.result-count strong{color:var(--accent)}.clear{display:none;padding:6px 0;border:0;background:none;color:var(--accent);font-size:12px;font-weight:900}.clear.show{display:inline-block}
+.atlas{display:grid;grid-template-columns:68px minmax(0,1fr);gap:28px;padding-block:36px 80px}.depth-rail{position:relative}.rail-inner{position:sticky;top:100px;height:360px;margin-top:28px}.rail-line{position:absolute;top:11px;bottom:11px;left:10px;width:1px;background:rgba(143,179,191,.32)}.rail-mark{position:absolute;left:0;display:flex;align-items:center;gap:9px;border:0;background:none;color:var(--dim);font:700 11px "SFMono-Regular",ui-monospace,monospace;white-space:nowrap;transform:translateY(-50%)}.rail-mark:before{content:"";width:7px;height:7px;border:1px solid var(--dim);border-radius:50%;background:#020a10;transition:.2s}.rail-mark.active{color:var(--accent)}.rail-mark.active:before{border-color:var(--accent);background:var(--accent);box-shadow:0 0 13px var(--accent)}.rail-mark[data-level="snorkel"]{top:3%}.rail-mark[data-level="owd"]{top:43%}.rail-mark[data-level="aowd"]{top:70%}.rail-mark[data-level="beyond"]{top:97%}
+.sections{min-width:0}.level-section{scroll-margin-top:86px;padding:24px 0 46px}.section-title{display:flex;align-items:center;gap:14px}.section-title .depth-label{color:var(--accent);font-size:11px;font-weight:900;letter-spacing:.08em;white-space:nowrap}.section-title h2{font-size:clamp(23px,3vw,34px);font-weight:900;line-height:1.08;letter-spacing:-.01em;white-space:nowrap}.section-title:after{content:"";width:100%;height:1px;background:linear-gradient(90deg,var(--edge),transparent)}.section-desc{margin:9px 0 20px;color:var(--dim);font-size:13px;line-height:1.7}
+.creature-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.creature-card{display:block;min-width:0;overflow:hidden;border:1px solid rgba(255,255,255,.1);border-radius:14px;background:var(--card);color:var(--ink);text-align:left;transition:border-color .2s,background .2s,transform .2s,box-shadow .2s}.creature-card:hover{border-color:var(--edge);background:rgba(47,243,224,.06);transform:translateY(-2px)}.creature-card:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.art-panel{position:relative;display:flex;align-items:center;justify-content:center;aspect-ratio:4/3;overflow:hidden}.art-panel[data-level="snorkel"]{background:linear-gradient(160deg,#0f5566,#0a3a4a)}.art-panel[data-level="owd"]{background:linear-gradient(160deg,#0b4050,#082c3a)}.art-panel[data-level="aowd"]{background:linear-gradient(160deg,#083040,#061f2b)}.art-panel[data-level="beyond"]{background:linear-gradient(160deg,#061a24,#030d14)}.art-panel svg{width:60%;height:60%;overflow:visible;color:var(--accent);filter:drop-shadow(0 7px 12px rgba(0,0,0,.25));transition:transform .25s ease}.art-panel svg path,.art-panel svg circle,.art-panel svg ellipse{fill:currentColor}.art-panel svg .cut{fill:#062633}.art-panel img{width:100%;height:100%;object-fit:cover;transition:transform .25s ease}.creature-card:hover .art-panel svg,.creature-card:hover .art-panel img{transform:translateY(-4px)}
+.level-badge{position:absolute;z-index:2;top:10px;right:10px;padding:4px 7px;border:1px solid rgba(233,251,255,.25);border-radius:99px;background:rgba(2,10,16,.64);color:var(--ink);font-size:10px;font-weight:900;letter-spacing:.03em}.card-body{display:block;padding:13px 14px 15px}.card-body>span{display:block}.card-name{overflow:hidden;font-size:16px;font-weight:900;line-height:1.25;letter-spacing:-.01em;text-overflow:ellipsis;white-space:nowrap}.card-en{margin-top:3px;overflow:hidden;color:var(--dim);font-size:11px;line-height:1.4;text-overflow:ellipsis;white-space:nowrap}.card-meta{margin-top:9px;color:var(--dim);font-size:12px;line-height:1.45}.card-spots{margin-top:5px;overflow:hidden;color:#bad3dc;font-size:12px;line-height:1.45;text-overflow:ellipsis;white-space:nowrap}
+.empty{display:none;padding:70px 20px 100px;color:var(--dim);text-align:center;line-height:1.8}.empty.show{display:block}.empty .filter-chip{display:block;margin:17px auto 0;color:#04202c;background:var(--accent);border-color:var(--accent)}.load-error{padding:90px 20px;color:var(--dim);text-align:center;line-height:1.8}
+.dialog .level-badge{left:14px;right:auto;top:14px}.modal-layer{position:fixed;inset:0;z-index:100;display:grid;place-items:center;padding:22px;visibility:hidden;opacity:0;background:rgba(0,5,9,.72);transition:opacity .2s,visibility .2s}.modal-layer.open{visibility:visible;opacity:1}.dialog{position:relative;width:min(560px,100%);max-height:min(88dvh,820px);overflow:auto;border:1px solid var(--edge);border-radius:18px;background:#06141c;box-shadow:0 28px 80px rgba(0,0,0,.65);transform:translateY(10px);transition:transform .24s}.modal-layer.open .dialog{transform:none}.dialog .art-panel{aspect-ratio:16/8.4}.dialog .art-panel svg{width:48%;height:62%}.modal-close{position:absolute;z-index:5;top:12px;right:12px;width:38px;height:38px;border:1px solid rgba(255,255,255,.2);border-radius:50%;background:rgba(2,10,16,.75);color:var(--ink);font-size:25px;line-height:1}.modal-close:hover{border-color:var(--accent);color:var(--accent)}.dialog-content{padding:24px 26px 30px}.dialog-name{padding-right:36px;font-size:clamp(27px,5vw,38px);font-weight:900;line-height:1.08;letter-spacing:-.01em}.dialog-en{margin-top:4px;color:var(--dim);font-size:12px;letter-spacing:.03em}.dialog-meta{margin-top:11px;color:#c3dbe3;font-size:13px;line-height:1.55}.detail-block{margin-top:23px}.detail-block h3{margin-bottom:7px;color:var(--accent);font-size:13px;font-weight:900;letter-spacing:.04em}.detail-block p{color:#d5e9ee;font-size:14px;line-height:1.8}.review{margin-left:6px;color:#ffca7a;font-size:11px;font-weight:900;white-space:nowrap}.tip-box{padding:14px 15px;border:1px solid rgba(47,243,224,.2);border-radius:10px;background:rgba(47,243,224,.075)}.spot-chips{display:flex;flex-wrap:wrap;gap:7px}.spot-link{padding:6px 9px;border:1px solid var(--edge);border-radius:99px;color:var(--accent);font-size:11px;font-weight:800;transition:.18s}.spot-link:hover{background:rgba(47,243,224,.1);border-color:var(--accent)}.no-spots{color:var(--dim);font-size:13px}footer{padding:0 24px 58px;color:var(--dim);font-size:11px;text-align:center;line-height:1.7}
+.rail-mark[data-rail-level="snorkel"]{top:3%}.rail-mark[data-rail-level="owd"]{top:43%}.rail-mark[data-rail-level="aowd"]{top:70%}.rail-mark[data-rail-level="beyond"]{top:97%}
+@media(max-width:1100px){.creature-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:959px){.wrap{padding-inline:18px}.page-head{padding-block:20px 34px}.filters{position:static}.filters-inner{display:grid;grid-template-columns:1fr;gap:7px;padding-block:9px}.filter-group{height:38px}.filter-label{flex-basis:66px}.filter-group .chip-track{flex:1}.filter-status{width:100%;min-height:34px;margin-left:0;padding-left:74px}.atlas{display:block;padding-top:22px}.depth-rail{display:none}.level-section{scroll-margin-top:10px}}
+@media(max-width:620px){.wrap{padding-inline:12px}.page-head{padding-inline:4px}h1{font-size:42px}.intro{font-size:14px}.filter-status{padding-left:74px}.creature-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.level-section{padding:20px 0 35px}.section-title{gap:8px}.section-title h2{font-size:18px}.section-title .depth-label{font-size:9px}.section-desc{font-size:12px}.card-body{padding:11px 10px 13px}.card-name{font-size:15px}.card-meta,.card-spots{font-size:11px}.level-badge{top:7px;right:7px}.modal-layer{align-items:end;padding:0}.dialog{width:100%;max-height:85dvh;border-width:1px 0 0;border-radius:18px 18px 0 0;transform:translateY(35px)}.dialog .art-panel{aspect-ratio:16/8.8}.dialog-content{padding:21px 18px max(28px,env(safe-area-inset-bottom))}}
 </style>
 </head>
-<body class="sea grain">
-<div class="bubbles" id="bub"></div>
-<div class="depth"><span>▽</span><div class="line"></div><b id="dm">0</b>m</div>
-
-<header class="top wrap">
-  <div class="kick mono">CREATURE GUIDE</div>
-  <h1>水下生物圖鑑</h1>
-  <p>往下潛,愈深愈暗。每層的鄰居們自由地游著——先是剪影,<b style="color:var(--ink)">滑上去(手機點一下)</b>牠就現出顏色與資料。</p>
-  <a class="back" href="../">← 回 DiveInOut</a>
-  <div class="cue">▽ SCROLL / 往下潛</div>
-</header>
-
-<main class="wrap" id="zones"></main>
-
-<footer>水下生物圖鑑 · DiveInOut ｜ 全部生物為同畫風手繪剪影,日後可升級精緻插畫<br>生態資訊供參考,實際遇見依海況與運氣 🍀</footer>
-
+<body>
+<header class="page-head"><div class="wrap"><a class="back mono" href="../">← DiveInOut</a><div class="lab mono">CREATURE GUIDE / 生物圖鑑</div><h1>水下生物圖鑑</h1><p class="intro">選你的程度和要去的地方，看看下水會遇到誰。</p></div></header>
+<section class="filters" aria-label="生物篩選"><div class="filters-inner wrap">
+  <div class="filter-group"><div class="filter-label mono">我的程度</div><div class="chip-track" role="group" aria-label="程度"><button class="filter-chip active" type="button" data-filter-level="">全部</button><button class="filter-chip" type="button" data-filter-level="snorkel">只浮潛</button><button class="filter-chip" type="button" data-filter-level="owd">OWD</button><button class="filter-chip" type="button" data-filter-level="aowd">AOWD</button></div></div>
+  <div class="filter-group"><label class="filter-label mono" for="region">我要去</label><select id="region"><option value="">全部地區</option><option value="okinawa">沖繩</option><option value="taiwan">台灣</option><option value="philippines">菲律賓</option><option value="palau">帛琉</option><option value="indonesia">印尼</option><option value="thailand">泰國</option><option value="malaysia">馬來西亞</option><option value="maldives">馬爾地夫</option><option value="egypt">埃及</option></select></div>
+  <div class="filter-status"><div class="result-count" id="resultCount">載入中…</div><button class="clear" id="clearFilters" type="button">清除篩選</button></div>
+</div></section>
+<main class="atlas wrap"><aside class="depth-rail" aria-label="深度快速導覽"><div class="rail-inner"><div class="rail-line"></div><button class="rail-mark active" type="button" data-rail-level="snorkel">0m</button><button class="rail-mark" type="button" data-rail-level="owd">18m</button><button class="rail-mark" type="button" data-rail-level="aowd">30m</button><button class="rail-mark" type="button" data-rail-level="beyond">40m+</button></div></aside><div class="sections" id="sections"><div class="load-error">正在載入生物圖鑑…</div></div></main>
+<div class="empty" id="emptyState">這個組合沒有收錄的生物。試試放寬程度或地區？<button class="filter-chip" type="button" data-clear>清除篩選</button></div>
+<footer>生態資訊供參考，實際遇見依海況與運氣。季節或開放狀態標註「需覆核」者，請在出發前再次確認。</footer>
+<div class="modal-layer" id="modalLayer" aria-hidden="true"><section class="dialog" id="dialog" role="dialog" aria-modal="true" aria-labelledby="dialogName" tabindex="-1"><button class="modal-close" type="button" aria-label="關閉詳細資料">×</button><div id="dialogBody"></div></section></div>
 <script>
-// 泡泡
-const bub=document.getElementById("bub");
-for(let i=0;i<11;i++){const b=document.createElement("i");const s=3+Math.random()*9;
-  b.style.left=Math.random()*100+"%";b.style.width=b.style.height=s+"px";
-  b.style.animationDuration=(7+Math.random()*10)+"s";b.style.animationDelay=(-Math.random()*10)+"s";bub.appendChild(b);}
-// 深度計
-const dm=document.getElementById("dm");
-addEventListener("scroll",()=>{const h=document.body.scrollHeight-innerHeight;
-  dm.textContent=Math.round((scrollY/Math.max(h,1))*45);},{passive:true});
-
-// ── 同畫風手繪剪影(100x100 viewBox,單色填色)──
+const REGIONS=new Set(["okinawa","taiwan","philippines","palau","indonesia","thailand","malaysia","maldives","egypt"]),LEVEL_ORDER=["snorkel","owd","aowd","beyond"];
+const LEVEL_INFO={snorkel:{depth:"0–5m",title:"浮潛就看得到",desc:"不用證照，戴上面鏡就能見面。",badge:"浮潛"},owd:{depth:"5–18m",title:"OWD 18m 內",desc:"拿到初級證照，這些都是你的主場。",badge:"OWD"},aowd:{depth:"18–30m",title:"AOWD 30m 內",desc:"進階深度與洋流，大傢伙開始登場。",badge:"AOWD"},beyond:{depth:"40m+",title:"休閒潛水看不到",desc:"用知識潛入就好。",badge:"—"}};
+// 原有 16 種與新增 6 種，皆為 100 × 100 單色幾何剪影。
 const SVGS={
- turtle:'<path d="M50 8 C55 8 58 12 58 17 C58 20 56 23 53 24 L53 27 C63 29 71 35 74 44 L88 37 C90 41 86 47 78 51 C78 53 77 56 76 58 L86 66 C83 70 76 69 71 65 C66 72 59 76 50 76 C41 76 34 72 29 65 C24 69 17 70 14 66 L24 58 C23 56 22 53 22 51 C14 47 10 41 12 37 L26 44 C29 35 37 29 47 27 L47 24 C44 23 42 20 42 17 C42 12 45 8 50 8 Z M46 76 L50 85 L54 76 Z"/>',
- clown:'<path fill-rule="evenodd" d="M16 50 C22 38 34 30 48 30 C62 30 72 37 77 45 L90 36 C93 42 91 49 86 52 C91 55 93 62 90 68 L77 55 C72 63 62 70 48 70 C34 70 22 62 16 50 Z M34 33 L40 32 L40 68 L34 67 Z M56 32 L62 33 L62 68 L56 68 Z"/>',
- jelly:'<path d="M30 42 C30 26 39 16 50 16 C61 16 70 26 70 42 C70 46 66 48 62 48 C64 56 62 66 60 74 C59 70 58 64 58 56 C56 64 55 74 52 82 C51 74 51 64 51 54 C49 64 47 74 44 80 C43 72 44 62 45 52 C43 60 41 68 38 72 C37 64 38 54 40 48 C35 48 30 46 30 42 Z"/>',
- squid:'<path d="M50 6 C56 14 58 24 58 36 L64 30 C66 36 62 42 58 46 L58 52 C58 58 56 62 54 64 L60 78 C56 76 53 72 52 68 C52 74 51 80 50 86 C49 80 48 74 48 68 C47 72 44 76 40 78 L46 64 C44 62 42 58 42 52 L42 46 C38 42 34 36 36 30 L42 36 C42 24 44 14 50 6 Z"/>',
- octo:'<path d="M50 14 C62 14 70 24 70 36 C70 42 68 46 64 49 C70 52 76 58 78 66 C72 64 68 60 64 56 C68 64 70 72 68 80 C64 74 60 68 58 61 C58 70 56 78 52 84 C50 77 50 70 50 63 C48 72 44 79 38 84 C38 76 40 68 42 61 C38 68 33 73 27 76 C28 68 32 61 37 56 C32 59 26 60 20 58 C25 53 31 50 36 49 C32 46 30 42 30 36 C30 24 38 14 50 14 Z"/>',
- puffer:'<path d="M46 22 L50 13 L53 23 C59 24 64 27 68 32 L77 28 L73 37 C76 41 77 46 77 51 L87 54 L76 58 C74 63 71 67 66 70 L69 79 L60 74 C56 76 51 77 46 77 L44 87 L40 76 C34 75 29 71 26 67 L17 70 L21 61 C18 57 17 52 18 47 L9 43 L19 41 C21 36 24 31 28 28 L26 18 L34 24 C38 22 42 21 46 22 Z M75 44 L91 36 L89 56 L74 52 Z"/>',
- moray:'<path d="M16 30 L34 24 L28 32 L40 34 L22 42 C30 48 42 46 50 42 C62 36 74 38 80 48 C86 58 84 70 76 78 C68 85 56 86 48 82 C56 80 64 76 68 68 C72 60 68 52 60 48 C52 44 42 46 34 50 C26 54 18 50 14 42 C12 37 13 33 16 30 Z"/>',
- shrimp:'<path d="M46 36 C52 26 62 18 74 14 L75 17 C64 21 55 29 49 38 Z M50 38 C58 31 68 27 80 26 L80 29 C69 30 60 34 52 41 Z M28 58 C28 46 38 38 50 38 C60 38 68 44 70 52 C72 60 66 68 56 70 L58 76 L52 72 L52 78 L46 72 C36 72 28 66 28 58 Z"/>',
- shark:'<path d="M8 52 C18 44 32 40 46 40 L52 26 L60 40 C70 41 78 44 84 48 L82 38 L92 46 C94 50 92 55 88 57 L92 66 L80 58 C72 62 60 64 48 63 L52 72 L42 63 C28 62 16 58 8 52 Z"/>',
- ray:'<path d="M50 18 C68 26 82 38 86 46 C74 56 60 58 52 57 L51 62 C53 74 53 84 51 94 C50 96 50 96 49 94 C47 84 47 74 49 62 L48 57 C40 58 26 56 14 46 C18 38 32 26 50 18 Z"/>',
- cuda:'<path d="M6 16 C16 12 30 11 40 14 L50 8 L48 15 L52 16 L48 17 L50 24 L40 18 C30 21 16 20 6 16 Z"/><path d="M6 16 C16 12 30 11 40 14 L50 8 L48 15 L52 16 L48 17 L50 24 L40 18 C30 21 16 20 6 16 Z" transform="translate(34 28)"/><path d="M6 16 C16 12 30 11 40 14 L50 8 L48 15 L52 16 L48 17 L50 24 L40 18 C30 21 16 20 6 16 Z" transform="translate(10 56)"/>',
- lobster:'<path d="M46 22 C38 14 28 8 16 6 L17 10 C28 12 37 17 44 25 Z M64 22 C70 13 78 7 88 6 L87 10 C78 12 70 17 66 25 Z M42 30 C42 22 48 16 56 16 C64 16 70 22 70 30 L70 48 C70 58 64 66 56 70 L60 80 L52 74 L54 84 L46 76 L46 84 L40 74 C36 68 34 60 36 52 L38 40 C38 36 40 32 42 30 Z"/>',
- manta:'<path d="M50 36 C47 29 41 25 35 27 C38 31 40 34 39 37 C28 38 14 43 7 50 C16 55 30 56 40 54 C45 53 47 56 48 60 L49 74 C49.5 78 50.5 78 51 74 L52 60 C53 56 55 53 60 54 C70 56 84 55 93 50 C86 43 72 38 61 37 C60 34 62 31 65 27 C59 25 53 29 50 36 Z"/>',
- mola:'<path d="M30 50 C30 36 40 27 52 27 C58 27 63 30 66 34 L72 14 C77 15 76 28 72 38 C76 42 78 46 78 50 C78 53 77 57 74 60 C77 71 77 84 72 86 L66 66 C62 70 58 73 52 73 C40 73 30 64 30 50 Z"/>',
- hammer:'<path d="M26 18 L74 18 C80 18 82 24 76 27 L58 30 L56 40 C64 44 70 48 72 54 L57 50 L56 62 C56 70 60 78 66 88 L54 80 C52 84 48 84 46 80 L34 88 C40 78 44 70 44 62 L43 50 L28 54 C30 48 36 44 44 40 L42 30 L24 27 C18 24 20 18 26 18 Z"/>',
- angler:'<path d="M32 52 C32 40 42 33 52 33 C50 27 50 21 53 16 C57 21 58 28 57 33 C68 35 76 42 77 50 L90 44 C88 51 84 54 80 55 L88 62 C82 64 76 61 73 58 C69 66 61 70 52 70 C41 70 32 63 32 52 Z"/><circle cx="53" cy="13" r="3.4"/>'
-};
-
-// 生物資料:f=剪影鍵,s=大小(px)
-const ZONES=[
- {d:"0–5m",t:"陽光帶 · 淺灘",desc:"陽光最足、最熱鬧的一層,浮潛就見得到的朋友們。",c:[
-  {f:"turtle",s:82,n:"綠蠵龜",dep:"0–20m",kind:"爬蟲類",trait:"溫和的海龜,成體以海草海藻為主食;是爬蟲類,要定時浮上水面呼吸。",where:"台灣小琉球(常駐 300+ 隻,幾乎必見)、沖繩慶良間、菲律賓。",tip:"保持 2m 距離、別觸摸、別擋住牠上浮換氣的路。"},
-  {f:"clown",s:60,n:"小丑魚",dep:"1–15m",kind:"雀鯛科",trait:"和海葵共生:海葵保護牠,牠幫海葵清潔引食。領域性強,會衝出來趕你。",where:"泛亞洲珊瑚礁區普遍,峇里、菲律賓、沖繩都常見。",tip:"別戳海葵;牠衝過來是在護家,看著可愛就好。"},
-  {f:"jelly",s:62,n:"水母",dep:"0–10m",kind:"刺絲胞動物",trait:"隨波逐流的漂浮者,觸手帶刺絲胞;多數螫傷不重但很痛。",where:"各海域皆有;帛琉水母湖的黃金水母幾乎無毒(⚠️開放狀態需覆核)。",tip:"上升與水面停留時多留意四周,別徒手碰。"},
-  {f:"squid",s:64,n:"軟絲/魷魚",dep:"3–15m",kind:"頭足類",trait:"夜潛明星,會瞬間變色溝通;眼睛在無脊椎動物中數一數二好。",where:"台灣東北角有著名的軟絲產房復育;夜潛常見。",tip:"夜潛燈別直射太久,牠會被光嚇到噴墨逃走。"}
- ]},
- {d:"5–18m",t:"珊瑚礁帶",desc:"色彩最爆炸的一層,OWD 新手的主場。",c:[
-  {f:"octo",s:70,n:"章魚",dep:"2–30m",kind:"頭足類",trait:"變色+變形的擬態大師,智商極高,能解謎開罐;白天多縮在洞裡。",where:"礁石與沙地洞穴,全亞洲潛點都有。",tip:"慢慢看牠變色就好,別伸手掏洞——牠緊張你也危險。"},
-  {f:"puffer",s:64,n:"河魨",dep:"3–20m",kind:"魨科",trait:"受威脅會吸水鼓成球;不少種類內臟含河魨毒素。",where:"礁區、潟湖,常見於沖繩與東南亞。",tip:"別故意嚇牠鼓氣——對牠是巨大壓力,可能致命。"},
-  {f:"moray",s:74,n:"裸胸鯙(海鰻)",dep:"3–30m",kind:"鯙科",trait:"白天躲在礁縫張大嘴——那不是兇,是牠在呼吸抽水。",where:"礁縫、沉船,墾丁綠島到紅海都有。",tip:"手絕對不要伸進洞縫;視力差的牠可能誤咬。"},
-  {f:"shrimp",s:54,n:"清潔蝦",dep:"5–25m",kind:"甲殼類",trait:"開「清潔站」幫魚除寄生蟲,連鯙都乖乖張嘴讓牠進出——海裡的互利共生。",where:"礁區清潔站,定點觀察最有趣。",tip:"停好中性浮力慢慢看,是水攝微距的經典題材。"}
- ]},
- {d:"18–30m",t:"深礁 · 峭壁",desc:"AOWD 的深度,大一點的傢伙開始登場。",c:[
-  {f:"shark",s:88,n:"白鰭礁鯊",dep:"8–40m",kind:"軟骨魚",trait:"性情溫馴,白天常靜靜趴在礁沙上休息(牠可以停著呼吸)。",where:"帛琉、菲律賓、沖繩外礁。",tip:"別追、別擋路;牠通常比你更想避開你。"},
-  {f:"ray",s:72,n:"魟魚",dep:"5–30m",kind:"軟骨魚",trait:"扁平身軀貼沙埋伏,尾部有毒棘;藍斑條尾魟是礁區常客。",where:"沙地、峭壁底部,泛亞洲皆有。",tip:"過沙地用「拖步」滑行,提醒牠先走,別踩到。"},
-  {f:"cuda",s:76,n:"梭魚群",dep:"10–30m",kind:"金梭魚科",trait:"成百上千繞成銀色龍捲風,是最震撼的魚群畫面之一。",where:"菲律賓巴里卡薩、詩巴丹最經典。",tip:"待在群外側慢慢欣賞,別衝進去打散隊形。"},
-  {f:"lobster",s:64,n:"龍蝦",dep:"5–30m",kind:"甲殼類",trait:"夜行性,白天只露兩根長觸鬚在洞口;夜潛才見全貌。",where:"礁縫、岩洞,台灣東北角到東南亞都有。",tip:"保育與禁採區規定各地不同——用眼睛帶走就好。"}
- ]},
- {d:"30–40m",t:"深藍帶",desc:"進階深度,大物的舞台;也是休閒潛水的下限。",c:[
-  {f:"manta",s:104,n:"鬼蝠魟 Manta",dep:"3–40m",kind:"軟骨魚",trait:"翼展可達 5m 的溫和巨獸,濾食浮游生物;愛在清潔站定點盤旋。",where:"峇里 Nusa Penida(4–5 月最佳 ⚠️)、馬爾地夫、石垣島。",tip:"待在牠下方外側、別追;牠好奇時會自己滑過你頭頂。"},
-  {f:"mola",s:88,n:"翻車魚 Mola Mola",dep:"深冷水湧升",kind:"翻車魨科",trait:"世界最重硬骨魚,像一顆會游泳的頭;隨冷水湧升上來給魚清潔。",where:"峇里 Nusa Penida(8–10 月 ⚠️)。",tip:"遇到是超級幸運——保持距離、關掉閃燈、安靜欣賞。"},
-  {f:"hammer",s:92,n:"鎚頭鯊",dep:"15–40m+",kind:"軟骨魚",trait:"鎚形頭部讓視野與電感應更廣;常成群洄游,神祕又壯觀。",where:"深潛點與洋流交會處;日本與那國島冬季群游聞名 ⚠️。",tip:"多在深冷水域,需良好氣量規劃與進階經驗。"}
- ]},
- {d:"40m+",t:"幽暗帶",desc:"陽光到不了的地方,休閒潛水的禁區——用知識潛入就好。",c:[
-  {f:"angler",s:70,n:"鮟鱇(燈籠魚)",dep:"200m+",kind:"深海魚",trait:"頭頂發光釣餌在黑暗中誘捕獵物;許多深海生物都自帶燈光。",where:"深海,人類只能靠潛水器一見。",tip:"這層交給科學家與紀錄片——我們在 40m 內就很精彩了 🧠"}
- ]}
-];
-
-// 產生 DOM
-const zc=document.getElementById("zones");
-zc.innerHTML=ZONES.map((z,zi)=>`<section class="zone zfade">
-  <div class="lab mono">${z.d} — ${z.t}</div>
-  <h2>${z.t.split(" · ")[0]}</h2>
-  <p class="zdesc">${z.desc}</p>
-  <div class="band">${z.c.map((c,ci)=>`
-    <div class="crt" data-i="${ci}" tabindex="0">
-      <div class="fig"><svg viewBox="0 0 100 100" style="width:${c.s}px;height:${c.s}px">${SVGS[c.f]}</svg></div>
-      <b>${c.n}</b><span class="mono">${c.dep}</span>
-      <div class="info"><button class="x">×</button>
-        <h4>${c.n}</h4><div class="meta">${c.dep} · ${c.kind}</div>
-        <p><b>特性</b>${c.trait}</p>
-        <p><b>可見地</b>${c.where}</p>
-        <p><b>提醒</b>${c.tip}</p></div>
-    </div>`).join("")}</div>
-</section>`).join("");
-
-// 自由漂游:定位 + 隨機漂移參數(決定性偽隨機,重整不亂跳)
-function rnd(i,k){const x=Math.sin(i*127.1+k*311.7)*43758.5;return x-Math.floor(x);}
-function layout(){
-  document.querySelectorAll(".band").forEach((band,bi)=>{
-    const crts=[...band.querySelectorAll(".crt")];
-    const cols=innerWidth<640?2:Math.min(4,crts.length);
-    const rows=Math.ceil(crts.length/cols);
-    const rowH=innerWidth<640?210:225;
-    band.style.height=(rows*rowH+50)+"px";
-    crts.forEach((c,i)=>{
-      const col=i%cols,row=(i/cols)|0,seed=bi*10+i;
-      const left=(100/cols)*(col+0.5)-((innerWidth<640?56:65)/band.offsetWidth*100)+(rnd(seed,1)*12-6);
-      const top=(row*rowH+24+rnd(seed,2)*46)/band.offsetHeight*100;
-      c.style.left=Math.max(0,Math.min(78,left))+"%";
-      c.style.top=top+"%";
-      c.style.setProperty("--dx",(rnd(seed,3)*56-28).toFixed(0)+"px");
-      c.style.setProperty("--dy",(rnd(seed,4)*30-15).toFixed(0)+"px");
-      c.style.setProperty("--dur",(13+rnd(seed,5)*10).toFixed(1)+"s");
-      c.style.animationDelay=(-rnd(seed,6)*12).toFixed(1)+"s";
-    });
-  });
-}
-layout();addEventListener("resize",layout);
-
-// 淡入
-const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target);}}),{threshold:.1});
-document.querySelectorAll(".zfade").forEach(el=>io.observe(el));
-
-// 資訊卡:hover 展開(桌面)+ 邊界修正;點一下釘住(手機底部彈出)
-document.querySelectorAll(".crt").forEach(c=>{
-  c.addEventListener("mouseenter",()=>{
-    const info=c.querySelector(".info");
-    info.style.marginLeft="0";
-    const r=info.getBoundingClientRect();let dx=0;
-    if(r.left<10)dx=10-r.left;
-    if(r.right>innerWidth-10)dx=innerWidth-10-r.right;
-    info.style.marginLeft=dx+"px";
-  });
-  c.addEventListener("click",e=>{
-    e.stopPropagation();
-    const was=c.classList.contains("pin");
-    document.querySelectorAll(".crt.pin").forEach(o=>o.classList.remove("pin"));
-    if(!was)c.classList.add("pin");
-  });
-  c.querySelector(".info").addEventListener("click",e=>e.stopPropagation());
-  c.querySelector(".x").addEventListener("click",e=>{e.stopPropagation();c.classList.remove("pin");});
-});
-document.addEventListener("click",()=>document.querySelectorAll(".crt.pin").forEach(o=>o.classList.remove("pin")));
-addEventListener("keydown",e=>{if(e.key==="Escape")document.querySelectorAll(".crt.pin").forEach(o=>o.classList.remove("pin"));});
+turtle:'<path d="M50 8 C55 8 58 12 58 17 C58 20 56 23 53 24 L53 27 C63 29 71 35 74 44 L88 37 C90 41 86 47 78 51 C78 53 77 56 76 58 L86 66 C83 70 76 69 71 65 C66 72 59 76 50 76 C41 76 34 72 29 65 C24 69 17 70 14 66 L24 58 C23 56 22 53 22 51 C14 47 10 41 12 37 L26 44 C29 35 37 29 47 27 L47 24 C44 23 42 20 42 17 C42 12 45 8 50 8 Z M46 76 L50 85 L54 76 Z"/>',
+clown:'<path fill-rule="evenodd" d="M16 50 C22 38 34 30 48 30 C62 30 72 37 77 45 L90 36 C93 42 91 49 86 52 C91 55 93 62 90 68 L77 55 C72 63 62 70 48 70 C34 70 22 62 16 50 Z M34 33 L40 32 L40 68 L34 67 Z M56 32 L62 33 L62 68 L56 68 Z"/>',
+jelly:'<path d="M30 42 C30 26 39 16 50 16 C61 16 70 26 70 42 C70 46 66 48 62 48 C64 56 62 66 60 74 C59 70 58 64 58 56 C56 64 55 74 52 82 C51 74 51 64 51 54 C49 64 47 74 44 80 C43 72 44 62 45 52 C43 60 41 68 38 72 C37 64 38 54 40 48 C35 48 30 46 30 42 Z"/>',
+squid:'<path d="M50 6 C56 14 58 24 58 36 L64 30 C66 36 62 42 58 46 L58 52 C58 58 56 62 54 64 L60 78 C56 76 53 72 52 68 C52 74 51 80 50 86 C49 80 48 74 48 68 C47 72 44 76 40 78 L46 64 C44 62 42 58 42 52 L42 46 C38 42 34 36 36 30 L42 36 C42 24 44 14 50 6 Z"/>',
+octo:'<path d="M50 14 C62 14 70 24 70 36 C70 42 68 46 64 49 C70 52 76 58 78 66 C72 64 68 60 64 56 C68 64 70 72 68 80 C64 74 60 68 58 61 C58 70 56 78 52 84 C50 77 50 70 50 63 C48 72 44 79 38 84 C38 76 40 68 42 61 C38 68 33 73 27 76 C28 68 32 61 37 56 C32 59 26 60 20 58 C25 53 31 50 36 49 C32 46 30 42 30 36 C30 24 38 14 50 14 Z"/>',
+puffer:'<path d="M46 22 L50 13 L53 23 C59 24 64 27 68 32 L77 28 L73 37 C76 41 77 46 77 51 L87 54 L76 58 C74 63 71 67 66 70 L69 79 L60 74 C56 76 51 77 46 77 L44 87 L40 76 C34 75 29 71 26 67 L17 70 L21 61 C18 57 17 52 18 47 L9 43 L19 41 C21 36 24 31 28 28 L26 18 L34 24 C38 22 42 21 46 22 Z M75 44 L91 36 L89 56 L74 52 Z"/>',
+moray:'<path d="M16 30 L34 24 L28 32 L40 34 L22 42 C30 48 42 46 50 42 C62 36 74 38 80 48 C86 58 84 70 76 78 C68 85 56 86 48 82 C56 80 64 76 68 68 C72 60 68 52 60 48 C52 44 42 46 34 50 C26 54 18 50 14 42 C12 37 13 33 16 30 Z"/>',
+shrimp:'<path d="M46 36 C52 26 62 18 74 14 L75 17 C64 21 55 29 49 38 Z M50 38 C58 31 68 27 80 26 L80 29 C69 30 60 34 52 41 Z M28 58 C28 46 38 38 50 38 C60 38 68 44 70 52 C72 60 66 68 56 70 L58 76 L52 72 L52 78 L46 72 C36 72 28 66 28 58 Z"/>',
+shark:'<path d="M8 52 C18 44 32 40 46 40 L52 26 L60 40 C70 41 78 44 84 48 L82 38 L92 46 C94 50 92 55 88 57 L92 66 L80 58 C72 62 60 64 48 63 L52 72 L42 63 C28 62 16 58 8 52 Z"/>',
+ray:'<path d="M50 18 C68 26 82 38 86 46 C74 56 60 58 52 57 L51 62 C53 74 53 84 51 94 C50 96 50 96 49 94 C47 84 47 74 49 62 L48 57 C40 58 26 56 14 46 C18 38 32 26 50 18 Z"/>',
+cuda:'<path d="M6 16 C16 12 30 11 40 14 L50 8 L48 15 L52 16 L48 17 L50 24 L40 18 C30 21 16 20 6 16 Z"/><path d="M6 16 C16 12 30 11 40 14 L50 8 L48 15 L52 16 L48 17 L50 24 L40 18 C30 21 16 20 6 16 Z" transform="translate(34 28)"/><path d="M6 16 C16 12 30 11 40 14 L50 8 L48 15 L52 16 L48 17 L50 24 L40 18 C30 21 16 20 6 16 Z" transform="translate(10 56)"/>',
+lobster:'<path d="M46 22 C38 14 28 8 16 6 L17 10 C28 12 37 17 44 25 Z M64 22 C70 13 78 7 88 6 L87 10 C78 12 70 17 66 25 Z M42 30 C42 22 48 16 56 16 C64 16 70 22 70 30 L70 48 C70 58 64 66 56 70 L60 80 L52 74 L54 84 L46 76 L46 84 L40 74 C36 68 34 60 36 52 L38 40 C38 36 40 32 42 30 Z"/>',
+manta:'<path d="M50 36 C47 29 41 25 35 27 C38 31 40 34 39 37 C28 38 14 43 7 50 C16 55 30 56 40 54 C45 53 47 56 48 60 L49 74 C49.5 78 50.5 78 51 74 L52 60 C53 56 55 53 60 54 C70 56 84 55 93 50 C86 43 72 38 61 37 C60 34 62 31 65 27 C59 25 53 29 50 36 Z"/>',
+mola:'<path d="M30 50 C30 36 40 27 52 27 C58 27 63 30 66 34 L72 14 C77 15 76 28 72 38 C76 42 78 46 78 50 C78 53 77 57 74 60 C77 71 77 84 72 86 L66 66 C62 70 58 73 52 73 C40 73 30 64 30 50 Z"/>',
+hammer:'<path d="M26 18 L74 18 C80 18 82 24 76 27 L58 30 L56 40 C64 44 70 48 72 54 L57 50 L56 62 C56 70 60 78 66 88 L54 80 C52 84 48 84 46 80 L34 88 C40 78 44 70 44 62 L43 50 L28 54 C30 48 36 44 44 40 L42 30 L24 27 C18 24 20 18 26 18 Z"/>',
+angler:'<path d="M32 52 C32 40 42 33 52 33 C50 27 50 21 53 16 C57 21 58 28 57 33 C68 35 76 42 77 50 L90 44 C88 51 84 54 80 55 L88 62 C82 64 76 61 73 58 C69 66 61 70 52 70 C41 70 32 63 32 52 Z"/><circle cx="53" cy="13" r="3.4"/>',
+whaleshark:'<path d="M8 47 C13 35 28 29 48 30 C65 31 78 38 85 45 L94 34 L92 49 L96 61 L84 54 C75 62 62 67 47 67 C29 67 15 61 8 52 Z M37 30 L45 18 L52 31 Z M40 66 L49 79 L55 65 Z"/><circle class="cut" cx="23" cy="42" r="1.5"/><circle class="cut" cx="31" cy="37" r="1.4"/><circle class="cut" cx="40" cy="42" r="1.5"/><circle class="cut" cx="49" cy="36" r="1.4"/><circle class="cut" cx="57" cy="43" r="1.5"/><circle class="cut" cx="66" cy="39" r="1.3"/><circle class="cut" cx="73" cy="47" r="1.4"/><circle class="cut" cx="29" cy="53" r="1.3"/><circle class="cut" cx="46" cy="53" r="1.5"/><circle class="cut" cx="61" cy="55" r="1.4"/>',
+thresher:'<path d="M7 54 C18 45 31 42 45 42 L51 29 L58 42 C67 43 73 47 78 51 C83 39 86 24 82 9 C92 23 91 43 80 56 L89 65 L75 59 C67 63 56 65 45 63 L49 73 L39 63 C27 62 15 59 7 54 Z"/>',
+sardine:'<path d="M18 29 C25 24 32 24 38 28 L46 23 L44 31 L47 36 L38 33 C31 37 24 35 18 29 Z"/><path d="M46 18 C52 14 59 15 64 19 L71 16 L69 23 L72 28 L64 24 C58 27 51 24 46 18 Z"/><path d="M65 30 C72 27 79 29 83 34 L91 33 L87 40 L89 46 L81 40 C74 42 68 38 65 30 Z"/><path d="M66 52 C73 49 80 52 83 58 L91 59 L86 65 L87 72 L79 65 C72 66 67 61 66 52 Z"/><path d="M48 69 C54 65 61 66 66 70 L73 68 L70 75 L73 81 L64 76 C58 79 52 76 48 69 Z"/><path d="M24 66 C30 62 37 63 42 67 L49 64 L46 72 L49 77 L40 73 C34 76 28 73 24 66 Z"/><path d="M11 47 C17 43 24 44 29 48 L36 45 L33 52 L36 57 L27 53 C21 56 15 53 11 47 Z"/><path d="M37 43 C43 39 50 40 55 44 L62 41 L59 48 L62 53 L53 49 C47 52 41 49 37 43 Z"/>',
+nudi:'<path d="M18 61 C20 46 31 35 47 34 C63 33 77 43 82 58 C76 68 62 73 45 72 C31 72 21 68 18 61 Z M28 39 C23 31 24 23 29 18 C34 23 35 31 31 39 Z M38 36 C36 27 39 20 44 17 C48 24 46 31 42 37 Z M63 39 C58 32 60 23 66 20 C71 27 69 34 63 39 Z M65 38 C72 32 80 35 82 41 C76 45 70 44 65 38 Z M64 39 C72 41 74 49 70 54 C64 51 61 46 64 39 Z M63 39 C65 47 59 53 53 52 C52 46 56 41 63 39 Z M64 38 C58 35 57 28 61 24 C67 27 69 33 64 38 Z"/>',
+gardeneel:'<path d="M12 80 L88 80 L92 89 L8 89 Z M24 81 C20 68 21 55 27 45 C31 38 32 29 27 21 C38 28 38 41 32 51 C27 60 28 70 31 81 Z M45 81 C42 70 45 61 50 53 C55 44 54 34 48 27 C60 33 63 46 56 57 C51 65 50 73 52 81 Z M66 81 C62 68 64 57 71 48 C77 40 77 31 72 23 C83 30 84 43 77 52 C71 61 71 70 74 81 Z M36 81 C34 74 36 68 40 63 C44 58 44 51 41 46 C49 50 51 59 46 66 C42 71 42 76 44 81 Z"/>',
+napoleon:'<path d="M10 53 C18 43 31 37 45 37 C46 26 53 19 63 20 C69 21 73 27 73 35 C79 39 84 44 87 49 L96 39 L93 53 L97 66 L85 58 C78 66 64 72 48 72 C31 72 18 65 10 53 Z M23 48 C18 40 18 32 23 27 C29 34 29 41 25 48 Z M34 70 L43 82 L50 71 Z M76 50 C82 47 88 48 92 52 C88 56 82 57 76 55 Z"/>'};
+const esc=value=>String(value??"").replace(/[&<>\"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"})[c]);
+const state={level:null,region:null};let creatures=[],levels={},spotById=new Map(),regionBySpot=new Map(),lastTrigger=null,currentCreature=null,sectionObserver=null;
+function restoreState(){const q=new URLSearchParams(location.search),lv=q.get("lv"),r=q.get("r");state.level=["snorkel","owd","aowd"].includes(lv)?lv:null;state.region=REGIONS.has(r)?r:null}
+function syncUrl(){const q=new URLSearchParams();if(state.level)q.set("lv",state.level);if(state.region)q.set("r",state.region);history.replaceState(null,"",location.pathname+(q.size?`?${q}`:"")+location.hash)}
+function updateControls(){document.querySelectorAll("[data-filter-level]").forEach(b=>b.classList.toggle("active",(b.dataset.filterLevel||null)===state.level));document.getElementById("region").value=state.region||"";document.getElementById("clearFilters").classList.toggle("show",Boolean(state.level||state.region))}
+function allowedLevels(){return state.level?LEVEL_ORDER.slice(0,LEVEL_ORDER.indexOf(state.level)+1):LEVEL_ORDER}
+function matches(c){return allowedLevels().includes(c.level)&&(!state.region||c.spots.some(id=>regionBySpot.get(id)===state.region))}
+function visual(c){if(c.img)return `<img src="${esc(c.img)}" alt="" loading="lazy">`;const key=c.svg||c.id;return `<svg viewBox="0 0 100 100" role="img" aria-label="${esc(c.name)}插畫">${SVGS[key]||""}</svg>`}
+function spotsSummary(c){const n=c.spots.map(id=>spotById.get(id)?.name).filter(Boolean);return !n.length?"未指定潛點":n.length<=2?n.join("、"):`${n.slice(0,2).join("、")}等 ${n.length} 處`}
+function cardHtml(c){const i=LEVEL_INFO[c.level];return `<button class="creature-card" type="button" data-creature="${esc(c.id)}" aria-label="查看${esc(c.name)}詳細資料"><span class="art-panel" data-level="${c.level}">${visual(c)}<span class="level-badge mono">${i.badge}</span></span><span class="card-body"><span class="card-name">${esc(c.name)}</span><span class="card-en mono">${esc(c.en)}</span><span class="card-meta">${esc(c.kind)} · ${esc(c.depth)}</span><span class="card-spots">${esc(spotsSummary(c))}</span></span></button>`}
+function render(){const f=creatures.filter(matches),sections=document.getElementById("sections");sections.innerHTML=LEVEL_ORDER.map(level=>{const rows=f.filter(c=>c.level===level),i=LEVEL_INFO[level];return rows.length?`<section class="level-section" id="level-${level}" data-section="${level}"><div class="section-title"><span class="depth-label mono">${i.depth}</span><h2>${i.title}</h2></div><p class="section-desc">${i.desc}</p><div class="creature-grid">${rows.map(cardHtml).join("")}</div></section>`:""}).join("");document.getElementById("resultCount").innerHTML=`符合 <strong>${f.length}</strong> / ${creatures.length} 種`;document.getElementById("emptyState").classList.toggle("show",!f.length);syncUrl();updateControls();observeSections()}
+function observeSections(){sectionObserver?.disconnect();sectionObserver=new IntersectionObserver(es=>{const v=es.filter(e=>e.isIntersecting).sort((a,b)=>Math.abs(a.boundingClientRect.top)-Math.abs(b.boundingClientRect.top))[0];if(v)setRail(v.target.dataset.section)},{rootMargin:"-18% 0px -60% 0px",threshold:0});document.querySelectorAll("[data-section]").forEach(el=>sectionObserver.observe(el));const first=document.querySelector("[data-section]");if(first)setRail(first.dataset.section)}
+function setRail(level){document.querySelectorAll(".rail-mark").forEach(b=>b.classList.toggle("active",b.dataset.railLevel===level))}function clearFilters(){state.level=null;state.region=null;render()}
+function dialogHtml(c){const i=LEVEL_INFO[c.level],links=c.spots.map(id=>spotById.get(id)?`<a class="spot-link" href="../spots/?focus=${encodeURIComponent(id)}">${esc(spotById.get(id).name)}</a>`:"").join("");return `<div class="art-panel" data-level="${c.level}">${visual(c)}<span class="level-badge mono">${i.badge}</span></div><div class="dialog-content"><h2 class="dialog-name" id="dialogName">${esc(c.name)}</h2><div class="dialog-en mono">${esc(c.en)}</div><div class="dialog-meta">${esc(c.kind)} · ${esc(c.depth)} · ${esc(levels[c.level]||i.title)}</div><section class="detail-block"><h3>牠是誰</h3><p>${esc(c.trait)}</p></section><section class="detail-block"><h3>在哪看得到</h3><p>${esc(c.where)}${c.warn?'<span class="review">⚠️ 需覆核</span>':''}</p></section><section class="detail-block"><h3>怎麼跟牠相處</h3><p class="tip-box">${esc(c.tip)}</p></section><section class="detail-block"><h3>在這些潛點遇得到</h3><div class="spot-chips">${links||'<span class="no-spots">目前沒有指定潛點</span>'}</div></section></div>`}
+function openCreature(id,{fromHash=false}={}){const c=creatures.find(x=>x.id===id);if(!c)return;const layer=document.getElementById("modalLayer");currentCreature=c;if(!fromHash)lastTrigger=document.activeElement?.closest?.(".creature-card")||null;document.getElementById("dialogBody").innerHTML=dialogHtml(c);layer.classList.add("open");layer.setAttribute("aria-hidden","false");document.body.classList.add("modal-open");if(location.hash!==`#${c.id}`)history.pushState(null,"",location.pathname+location.search+`#${c.id}`);requestAnimationFrame(()=>document.querySelector(".modal-close").focus())}
+function closeCreature({fromHash=false}={}){if(!currentCreature)return;document.getElementById("modalLayer").classList.remove("open");document.getElementById("modalLayer").setAttribute("aria-hidden","true");document.body.classList.remove("modal-open");currentCreature=null;if(!fromHash&&location.hash)history.replaceState(null,"",location.pathname+location.search);lastTrigger?.focus();lastTrigger=null}
+function handleHash(){const id=decodeURIComponent(location.hash.slice(1));if(id&&creatures.some(c=>c.id===id))openCreature(id,{fromHash:true});else if(currentCreature)closeCreature({fromHash:true})}
+document.querySelectorAll("[data-filter-level]").forEach(b=>b.addEventListener("click",()=>{state.level=b.dataset.filterLevel||null;render()}));document.getElementById("region").addEventListener("change",e=>{state.region=e.target.value||null;render()});document.getElementById("clearFilters").addEventListener("click",clearFilters);document.querySelector("[data-clear]").addEventListener("click",clearFilters);document.querySelectorAll(".rail-mark").forEach(b=>b.addEventListener("click",()=>document.getElementById(`level-${b.dataset.railLevel}`)?.scrollIntoView({behavior:"smooth"})));document.getElementById("sections").addEventListener("click",e=>{const card=e.target.closest("[data-creature]");if(card)openCreature(card.dataset.creature)});document.querySelector(".modal-close").addEventListener("click",()=>closeCreature());document.getElementById("modalLayer").addEventListener("click",e=>{if(e.target===e.currentTarget)closeCreature()});
+addEventListener("keydown",e=>{if(e.key==="Escape"&&currentCreature)closeCreature();if(e.key==="Tab"&&currentCreature){const nodes=[...document.getElementById("dialog").querySelectorAll('button,a[href],[tabindex]:not([tabindex="-1"])')];if(!nodes.length)return;const first=nodes[0],last=nodes.at(-1);if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}}});addEventListener("hashchange",handleHash);
+restoreState();updateControls();Promise.all([fetch("../creatures.json").then(r=>{if(!r.ok)throw new Error("creatures.json");return r.json()}),fetch("../spots.json").then(r=>{if(!r.ok)throw new Error("spots.json");return r.json()})]).then(([cd,sd])=>{creatures=cd.creatures;levels=cd.levels;spotById=new Map(sd.spots.map(s=>[s.id,s]));regionBySpot=new Map(sd.spots.map(s=>[s.id,s.region]));render();handleHash()}).catch(()=>{document.getElementById("sections").innerHTML='<div class="load-error">目前無法讀取生物資料，請稍後再試。</div>';document.getElementById("resultCount").textContent="載入失敗"});
 </script>
 </body>
 </html>

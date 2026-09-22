@@ -1,0 +1,399 @@
+{
+ "updated": "2026-09-22",
+ "levels": {
+  "snorkel": "浮潛就看得到",
+  "owd": "OWD（18m 內）",
+  "aowd": "AOWD（30m 內）",
+  "beyond": "休閒潛水看不到"
+ },
+ "creatures": [
+  {
+   "id": "turtle",
+   "name": "綠蠵龜",
+   "en": "Green sea turtle",
+   "kind": "爬蟲類",
+   "svg": "turtle",
+   "level": "snorkel",
+   "depth": "0–20m",
+   "trait": "溫和的海龜,成體以海草海藻為主食;是爬蟲類,要定時浮上水面呼吸。",
+   "where": "台灣小琉球(常駐 300+ 隻,幾乎必見)、沖繩慶良間、菲律賓。",
+   "tip": "保持 2m 距離、別觸摸、別擋住牠上浮換氣的路。",
+   "spots": [
+    "xiaoliuqiu",
+    "kerama",
+    "green-island",
+    "moalboal",
+    "balicasag",
+    "sipadan",
+    "nusa-penida"
+   ],
+   "warn": false
+  },
+  {
+   "id": "clown",
+   "name": "小丑魚",
+   "en": "Clownfish",
+   "kind": "雀鯛科",
+   "svg": "clown",
+   "level": "snorkel",
+   "depth": "1–15m",
+   "trait": "和海葵共生:海葵保護牠,牠幫海葵清潔引食。領域性強,會衝出來趕你。",
+   "where": "泛亞洲珊瑚礁區普遍,峇里、菲律賓、沖繩都常見。",
+   "tip": "別戳海葵;牠衝過來是在護家,看著可愛就好。",
+   "spots": [
+    "anilao",
+    "kenting",
+    "sesoko",
+    "moalboal",
+    "similan"
+   ],
+   "warn": false
+  },
+  {
+   "id": "jelly",
+   "name": "水母",
+   "en": "Jellyfish",
+   "kind": "刺絲胞動物",
+   "svg": "jelly",
+   "level": "snorkel",
+   "depth": "0–10m",
+   "trait": "隨波逐流的漂浮者,觸手帶刺絲胞;多數螫傷不重但很痛。",
+   "where": "各海域皆有;帛琉水母湖的黃金水母幾乎無毒(⚠️開放狀態需覆核)。",
+   "tip": "上升與水面停留時多留意四周,別徒手碰。",
+   "spots": [],
+   "warn": true
+  },
+  {
+   "id": "squid",
+   "name": "軟絲/魷魚",
+   "en": "Bigfin reef squid",
+   "kind": "頭足類",
+   "svg": "squid",
+   "level": "owd",
+   "depth": "3–15m",
+   "trait": "夜潛明星,會瞬間變色溝通;眼睛在無脊椎動物中數一數二好。",
+   "where": "台灣東北角有著名的軟絲產房復育;夜潛常見。",
+   "tip": "夜潛燈別直射太久,牠會被光嚇到噴墨逃走。",
+   "spots": [
+    "longdong",
+    "chaojing"
+   ],
+   "warn": false
+  },
+  {
+   "id": "octo",
+   "name": "章魚",
+   "en": "Octopus",
+   "kind": "頭足類",
+   "svg": "octo",
+   "level": "owd",
+   "depth": "2–30m",
+   "trait": "變色+變形的擬態大師,智商極高,能解謎開罐;白天多縮在洞裡。",
+   "where": "礁石與沙地洞穴,全亞洲潛點都有。",
+   "tip": "慢慢看牠變色就好,別伸手掏洞——牠緊張你也危險。",
+   "spots": [
+    "kenting",
+    "anilao",
+    "sunabe"
+   ],
+   "warn": false
+  },
+  {
+   "id": "puffer",
+   "name": "河魨",
+   "en": "Pufferfish",
+   "kind": "魨科",
+   "svg": "puffer",
+   "level": "owd",
+   "depth": "3–20m",
+   "trait": "受威脅會吸水鼓成球;不少種類內臟含河魨毒素。",
+   "where": "礁區、潟湖,常見於沖繩與東南亞。",
+   "tip": "別故意嚇牠鼓氣——對牠是巨大壓力,可能致命。",
+   "spots": [
+    "sunabe",
+    "kenting",
+    "anilao"
+   ],
+   "warn": false
+  },
+  {
+   "id": "moray",
+   "name": "裸胸鯙(海鰻)",
+   "en": "Moray eel",
+   "kind": "鯙科",
+   "svg": "moray",
+   "level": "owd",
+   "depth": "3–30m",
+   "trait": "白天躲在礁縫張大嘴——那不是兇,是牠在呼吸抽水。",
+   "where": "礁縫、沉船,墾丁綠島到紅海都有。",
+   "tip": "手絕對不要伸進洞縫;視力差的牠可能誤咬。",
+   "spots": [
+    "kenting",
+    "green-island",
+    "sunabe",
+    "red-sea"
+   ],
+   "warn": false
+  },
+  {
+   "id": "shrimp",
+   "name": "清潔蝦",
+   "en": "Cleaner shrimp",
+   "kind": "甲殼類",
+   "svg": "shrimp",
+   "level": "owd",
+   "depth": "5–25m",
+   "trait": "開「清潔站」幫魚除寄生蟲,連鯙都乖乖張嘴讓牠進出——海裡的互利共生。",
+   "where": "礁區清潔站,定點觀察最有趣。",
+   "tip": "停好中性浮力慢慢看,是水攝微距的經典題材。",
+   "spots": [
+    "anilao",
+    "tulamben",
+    "chaojing"
+   ],
+   "warn": false
+  },
+  {
+   "id": "shark",
+   "name": "白鰭礁鯊",
+   "en": "Whitetip reef shark",
+   "kind": "軟骨魚",
+   "svg": "shark",
+   "level": "aowd",
+   "depth": "8–40m",
+   "trait": "性情溫馴,白天常靜靜趴在礁沙上休息(牠可以停著呼吸)。",
+   "where": "帛琉、菲律賓、沖繩外礁。",
+   "tip": "別追、別擋路;牠通常比你更想避開你。",
+   "spots": [
+    "blue-corner",
+    "sipadan",
+    "maldives"
+   ],
+   "warn": false
+  },
+  {
+   "id": "ray",
+   "name": "魟魚",
+   "en": "Stingray",
+   "kind": "軟骨魚",
+   "svg": "ray",
+   "level": "owd",
+   "depth": "5–30m",
+   "trait": "扁平身軀貼沙埋伏,尾部有毒棘;藍斑條尾魟是礁區常客。",
+   "where": "沙地、峭壁底部,泛亞洲皆有。",
+   "tip": "過沙地用「拖步」滑行,提醒牠先走,別踩到。",
+   "spots": [
+    "sipadan",
+    "maldives",
+    "similan",
+    "kerama"
+   ],
+   "warn": false
+  },
+  {
+   "id": "cuda",
+   "name": "梭魚群",
+   "en": "Barracuda school",
+   "kind": "金梭魚科",
+   "svg": "cuda",
+   "level": "aowd",
+   "depth": "10–30m",
+   "trait": "成百上千繞成銀色龍捲風,是最震撼的魚群畫面之一。",
+   "where": "菲律賓巴里卡薩、詩巴丹最經典。",
+   "tip": "待在群外側慢慢欣賞,別衝進去打散隊形。",
+   "spots": [
+    "balicasag",
+    "sipadan",
+    "blue-corner"
+   ],
+   "warn": false
+  },
+  {
+   "id": "lobster",
+   "name": "龍蝦",
+   "en": "Spiny lobster",
+   "kind": "甲殼類",
+   "svg": "lobster",
+   "level": "owd",
+   "depth": "5–30m",
+   "trait": "夜行性,白天只露兩根長觸鬚在洞口;夜潛才見全貌。",
+   "where": "礁縫、岩洞,台灣東北角到東南亞都有。",
+   "tip": "保育與禁採區規定各地不同——用眼睛帶走就好。",
+   "spots": [
+    "longdong",
+    "chaojing",
+    "kenting"
+   ],
+   "warn": false
+  },
+  {
+   "id": "manta",
+   "name": "鬼蝠魟 Manta",
+   "en": "Manta ray",
+   "kind": "軟骨魚",
+   "svg": "manta",
+   "level": "owd",
+   "depth": "5–25m",
+   "trait": "翼展可達 5m 的溫和巨獸,濾食浮游生物;愛在清潔站定點盤旋。",
+   "where": "峇里 Nusa Penida(4–5 月最佳 ⚠️)、馬爾地夫、石垣島。",
+   "tip": "待在牠下方外側、別追;牠好奇時會自己滑過你頭頂。",
+   "spots": [
+    "ishigaki-manta",
+    "nusa-penida",
+    "komodo",
+    "raja-ampat",
+    "maldives"
+   ],
+   "warn": true
+  },
+  {
+   "id": "mola",
+   "name": "翻車魚 Mola Mola",
+   "en": "Ocean sunfish",
+   "kind": "翻車魨科",
+   "svg": "mola",
+   "level": "aowd",
+   "depth": "20–35m",
+   "trait": "世界最重硬骨魚,像一顆會游泳的頭;隨冷水湧升上來給魚清潔。",
+   "where": "峇里 Nusa Penida(8–10 月 ⚠️)。",
+   "tip": "遇到是超級幸運——保持距離、關掉閃燈、安靜欣賞。",
+   "spots": [
+    "nusa-penida",
+    "komodo"
+   ],
+   "warn": true
+  },
+  {
+   "id": "hammer",
+   "name": "鎚頭鯊",
+   "en": "Hammerhead shark",
+   "kind": "軟骨魚",
+   "svg": "hammer",
+   "level": "aowd",
+   "depth": "15–40m+",
+   "trait": "鎚形頭部讓視野與電感應更廣;常成群洄游,神祕又壯觀。",
+   "where": "深潛點與洋流交會處;日本與那國島冬季群游聞名 ⚠️。",
+   "tip": "多在深冷水域,需良好氣量規劃與進階經驗。",
+   "spots": [
+    "yonaguni"
+   ],
+   "warn": true
+  },
+  {
+   "id": "angler",
+   "name": "鮟鱇(燈籠魚)",
+   "en": "Anglerfish",
+   "kind": "深海魚",
+   "svg": "angler",
+   "level": "beyond",
+   "depth": "200m+",
+   "trait": "頭頂發光釣餌在黑暗中誘捕獵物;許多深海生物都自帶燈光。",
+   "where": "深海,人類只能靠潛水器一見。",
+   "tip": "這層交給科學家與紀錄片——我們在 40m 內就很精彩了 🧠",
+   "spots": [],
+   "warn": false
+  },
+  {
+   "id": "whaleshark",
+   "name": "鯨鯊",
+   "en": "Whale shark",
+   "kind": "軟骨魚",
+   "level": "snorkel",
+   "depth": "0–20m",
+   "trait": "世界最大的魚，體長可超過 10m，卻是只吃浮游生物的溫和巨人。",
+   "where": "菲律賓歐斯陸、泰國斯米蘭、馬爾地夫等海域。",
+   "tip": "保持 3m 以上距離，不觸摸、不開閃光。歐斯陸以餵食吸引鯨鯊，對牠們習性的影響有爭議，也可以選擇不餵食的觀察行程。",
+   "spots": [
+    "oslob",
+    "similan",
+    "maldives"
+   ],
+   "warn": false,
+   "svg": null
+  },
+  {
+   "id": "thresher",
+   "name": "長尾鯊",
+   "en": "Thresher shark",
+   "kind": "軟骨魚",
+   "level": "aowd",
+   "depth": "20–30m",
+   "trait": "尾鰭上葉幾乎和身體一樣長，用來甩暈魚群；清晨會游到比較淺的清潔站。",
+   "where": "菲律賓馬拉帕斯加 Monad Shoal 的清晨潛水最有名。",
+   "tip": "清晨出發、深度在 20m 以上，建議有 AOWD 與高氧證照；在清潔站外緣靜靜看，不越線、不開閃光。",
+   "spots": [
+    "malapascua"
+   ],
+   "warn": false,
+   "svg": null
+  },
+  {
+   "id": "sardine",
+   "name": "沙丁魚風暴",
+   "en": "Sardine run",
+   "kind": "鯡科魚群",
+   "level": "snorkel",
+   "depth": "0–15m",
+   "trait": "數百萬尾沙丁魚聚成會變形的銀色雲，掠食者一靠近就瞬間散開又合攏。",
+   "where": "菲律賓墨寶 Moalboal，離岸不遠就看得到（⚠️魚群位置會變動）。",
+   "tip": "浮潛就看得到。不要衝進魚群，停在旁邊讓牠們繞著你轉最漂亮。",
+   "spots": [
+    "moalboal"
+   ],
+   "warn": true,
+   "svg": null
+  },
+  {
+   "id": "nudi",
+   "name": "海蛞蝓",
+   "en": "Nudibranch",
+   "kind": "軟體動物",
+   "level": "owd",
+   "depth": "3–25m",
+   "trait": "色彩最鮮豔的小傢伙，不少種會把吃進去的毒素或刺絲胞留在身上防身。",
+   "where": "菲律賓阿尼洛、峇里圖藍本、台灣潮境都是微距熱點。",
+   "tip": "體型常不到 2cm。放慢速度、穩住中性浮力，蛙鞋別踢起沙。",
+   "spots": [
+    "anilao",
+    "tulamben",
+    "chaojing"
+   ],
+   "warn": false,
+   "svg": null
+  },
+  {
+   "id": "gardeneel",
+   "name": "花園鰻",
+   "en": "Garden eel",
+   "kind": "康吉鰻科",
+   "level": "owd",
+   "depth": "10–25m",
+   "trait": "一大片細長身體從沙地冒出來、隨水流擺動，一靠近就整片縮回洞裡。",
+   "where": "台灣蘭嶼等沙地斜坡。",
+   "tip": "壓低身體慢慢接近，保持距離；氣泡太大牠們也會縮回去。",
+   "spots": [
+    "lanyu"
+   ],
+   "warn": false,
+   "svg": null
+  },
+  {
+   "id": "napoleon",
+   "name": "拿破崙魚",
+   "en": "Humphead wrasse",
+   "kind": "隆頭魚科",
+   "level": "owd",
+   "depth": "5–30m",
+   "trait": "額頭隆起的大型隆頭魚，體長可達 2m，好奇心強，常主動靠近潛水員。",
+   "where": "帛琉藍角、馬來西亞詩巴丹、紅海。",
+   "tip": "瀕危物種，絕對不要餵食或觸摸。",
+   "spots": [
+    "blue-corner",
+    "sipadan",
+    "red-sea"
+   ],
+   "warn": false,
+   "svg": null
+  }
+ ]
+}

@@ -91,6 +91,10 @@
   .month-labels{margin-top:5px;color:var(--dim);font-size:10px;text-align:center}
   .see{display:-webkit-box;margin-top:10px;overflow:hidden;color:var(--ink);font-size:13px;line-height:1.55;
     -webkit-box-orient:vertical;-webkit-line-clamp:2}
+  .creatures-here{margin-top:9px;color:#cfe4ea;font-size:11px;line-height:1.65}
+  .creatures-here b{margin-right:5px;color:var(--accent)}
+  .creature-link{display:inline-block;margin-right:6px;color:var(--accent);font-weight:800;text-decoration:underline;
+    text-decoration-color:rgba(47,243,224,.35);text-underline-offset:2px}
   .card-foot{display:flex;align-items:center;gap:10px;min-height:25px;margin-top:9px}
   .warning{color:#ffca7a;font-size:11px;font-weight:800}
   .map-link{margin-left:auto;padding:4px 0;border:0;background:none;color:var(--accent);font-size:11px;font-weight:900}
@@ -144,6 +148,9 @@
     .month-labels span:nth-child(10),.month-labels span:nth-child(12){visibility:visible}
   }
   @media(min-width:960px){.mobile-only{display:none!important}}
+  .see-creatures{margin:8px 0 0;font-size:12px;color:var(--dim);line-height:1.6}
+  .see-creature{color:var(--accent);text-decoration:none}
+  .see-creature:hover{text-decoration:underline}
 </style>
 </head>
 <body class="view-list">
@@ -252,7 +259,8 @@ const VALID={level:new Set(["beginner","intermediate","advanced"]),entry:new Set
 const levelRank={beginner:0,intermediate:1,advanced:2};
 const currentMonth=Number(new Intl.DateTimeFormat("en-US",{month:"numeric",timeZone:"Asia/Taipei"}).format(new Date()));
 const state={month:null,level:null,entries:new Set(),tags:new Set(),region:null};
-let allSpots=[],filteredSpots=[],updated="",map,clusters,markers=new Map(),mapReady=false;
+let allSpots=[],filteredSpots=[],updated="",map,clusters,markers=new Map(),mapReady=false,requestedFocus=null;
+let creaturesBySpot=new Map();
 const mobileQuery=matchMedia("(max-width: 959px)");
 const esc=value=>String(value??"").replace(/[&<>\"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"})[c]);
 
@@ -263,12 +271,14 @@ function restoreState(){
   (q.get("e")||"").split(",").filter(x=>VALID.entry.has(x)).forEach(x=>state.entries.add(x));
   (q.get("t")||"").split(",").filter(x=>VALID.tag.has(x)).forEach(x=>state.tags.add(x));
   state.region=VALID.region.has(q.get("r"))?q.get("r"):null;
+  requestedFocus=q.get("focus")||null;
 }
 function syncUrl(){
   const q=new URLSearchParams();
   if(state.month)q.set("m",state.month);if(state.level)q.set("lv",state.level);
   if(state.entries.size)q.set("e",[...state.entries].join(","));if(state.tags.size)q.set("t",[...state.tags].join(","));
   if(state.region)q.set("r",state.region);
+  if(requestedFocus)q.set("focus",requestedFocus);
   history.replaceState(null,"",location.pathname+(q.size?"?"+q.toString().replace(/%2C/gi,","):"")+location.hash);
 }
 function hasFilters(){return Boolean(state.month||state.level||state.entries.size||state.tags.size||state.region)}
@@ -293,13 +303,19 @@ function monthChart(s){
   const labels=Array.from({length:12},(_,i)=>`<span>${i+1}</span>`).join("");
   return `<div class="month-chart" aria-label="最佳月份：${s.months.join('、')}月"><div class="month-bars">${bars}</div><div class="month-labels mono">${labels}</div></div>`;
 }
+function seeHtml(s,max=Infinity){
+  const list=creaturesBySpot.get(s.id)||[];if(!list.length)return "";
+  const shown=list.slice(0,max).map(c=>`<a class="see-creature" href="../creatures/#${esc(c.id)}">${esc(c.name)}</a>`).join("、");
+  const more=list.length>max?`等 ${list.length} 種`:"";
+  return `<p class="see-creatures">🐠 在這裡看得到：${shown}${more}</p>`;
+}
 function cardHtml(s){
   const entries=s.entry.map(x=>`<span class="entry-badge">${ENTRIES[x]}</span>`).join("");
   const tags=s.tags.map(x=>`<span title="${TAGS[x][1]}">${TAGS[x][0]}</span>`).join("");
   return `<article class="spot-card" id="card-${esc(s.id)}" data-id="${esc(s.id)}" tabindex="0">
     <div class="card-top"><h2>${esc(s.name)}</h2><span class="level-badge ${s.levelMin}">${LEVELS[s.levelMin]}</span></div>
     <div class="place">📍 ${esc(s.place)}</div><div class="meta">${entries}<span class="tag-icons">${tags}</span></div>
-    ${monthChart(s)}<p class="see">${esc(s.see)}</p><div class="card-foot">${s.warn?'<span class="warning">⚠️ 季節需覆核</span>':''}
+    ${monthChart(s)}<p class="see">${esc(s.see)}</p>${seeHtml(s,4)}<div class="card-foot">${s.warn?'<span class="warning">⚠️ 季節需覆核</span>':''}
     <button class="map-link" type="button" data-map-id="${esc(s.id)}">在地圖上看 →</button></div></article>`;
 }
 function render(){
@@ -315,7 +331,7 @@ function popupHtml(s){
   return `<div class="pop"><h3>${esc(s.name)}</h3><div class="pop-place">📍 ${esc(s.place)}</div>
     <span class="pop-badge">難度 ${esc(s.level)}</span>${s.entry.map(x=>`<span class="pop-badge">${ENTRIES[x]}</span>`).join("")}
     <p><b>🗓 最佳季節</b>${esc(s.season)}${s.warn?' <span class="warning">⚠️需覆核</span>':''}</p>
-    <p><b>👀 亮點</b>${esc(s.see)}</p><p><b>⚠️ 注意</b>${esc(s.note)}</p></div>`;
+    <p><b>👀 亮點</b>${esc(s.see)}</p><p><b>⚠️ 注意</b>${esc(s.note)}</p>${seeHtml(s)}</div>`;
 }
 function initMap(){
   map=L.map("map",{scrollWheelZoom:false,touchZoom:true,minZoom:2,maxZoom:16,worldCopyJump:true}).setView([15,110],3);
@@ -327,7 +343,7 @@ function initMap(){
       return L.divIcon({html:`<div class="spot-cluster" style="width:${size}px;height:${size}px">${count}</div>`,
         className:"marker-cluster",iconSize:[size,size]})}}).addTo(map);
   const buoy=L.divIcon({className:"buoy",html:'<div class="pin"></div>',iconSize:[15,15],iconAnchor:[7,7],popupAnchor:[0,-8]});
-  allSpots.forEach(s=>{const marker=L.marker([s.lat,s.lng],{icon:buoy,title:s.name}).bindPopup(popupHtml(s));
+  allSpots.forEach(s=>{const marker=L.marker([s.lat,s.lng],{icon:buoy,title:s.name}).bindPopup(popupHtml(s),{autoPanPaddingTopLeft:[20,20],autoPanPaddingBottomRight:[20,20]});
     marker.on("mouseover",()=>document.getElementById(`card-${s.id}`)?.classList.add("marker-active"));
     marker.on("mouseout",()=>document.getElementById(`card-${s.id}`)?.classList.remove("marker-active"));
     marker.on("click",()=>highlightCard(s.id));markers.set(s.id,marker)});
@@ -358,7 +374,9 @@ function setView(view,{scroll=true}={}){
 function focusSpot(id){
   const s=allSpots.find(x=>x.id===id),marker=markers.get(id);if(!s||!marker)return;
   if(mobileQuery.matches)setView("map");
-  setTimeout(()=>{map.invalidateSize();map.once("moveend",()=>map.openPopup(marker.getPopup().setLatLng([s.lat,s.lng])));
+  setTimeout(()=>{map.invalidateSize();
+    // flyTo 結束後才開 popup，autoPan 才會把整個 popup 拉進可視範圍
+    map.once("moveend",()=>setTimeout(()=>map.openPopup(marker.getPopup().setLatLng([s.lat,s.lng])),60));
     map.flyTo([s.lat,s.lng],9,{duration:.8})},mobileQuery.matches?100:0);
 }
 function hotMarker(id,on){const marker=markers.get(id),visible=marker&&clusters.getVisibleParent(marker);
@@ -389,10 +407,14 @@ new ResizeObserver(measureChrome).observe(document.getElementById("filters"));
 addEventListener("resize",()=>{measureChrome();if(mapReady)setTimeout(()=>map.invalidateSize(),50)});
 
 restoreState();updateControls();measureChrome();
-fetch("../spots.json").then(r=>{if(!r.ok)throw new Error("spots.json");return r.json()}).then(data=>{
+const creaturesLoad=fetch("../creatures.json").then(r=>r.ok?r.json():null).catch(()=>null);
+fetch("../spots.json").then(r=>{if(!r.ok)throw new Error("spots.json");return r.json()}).then(async data=>{
+  const cr=await creaturesLoad;
+  (cr?.creatures||[]).forEach(c=>c.spots.forEach(id=>{if(!creaturesBySpot.has(id))creaturesBySpot.set(id,[]);creaturesBySpot.get(id).push(c)}));
   allSpots=data.spots;updated=data.updated;document.getElementById("dataNote").textContent=
     `季節與規範會變動，標 ⚠️ 者出發前請向當地潛店確認。座標為概略中心點。資料更新：${updated}`;
   render();initMap();
+  if(requestedFocus){const id=requestedFocus;requestedFocus=null;syncUrl();focusSpot(id)}
 }).catch(()=>{
   document.getElementById("resultCount").textContent="潛點資料載入失敗";
   document.getElementById("mobileResultCount").textContent="載入失敗";
