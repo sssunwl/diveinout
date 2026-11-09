@@ -365,7 +365,8 @@ addEventListener('hashchange',revealSource);revealSource();
         brief_sections.append(f'<section id="brief-{date}"><h2>{date} · 今日重點</h2><div class="grid">{cards}</div></section>')
     write(out / 'news/index.html', shell('每週情報', '潛旅、海洋與潛水安全的每週簡報重點。', 'news/', '<header class="intro"><div class="lab">News / 海面情報</div><h1>從海面，讀懂海裡。</h1><p class="dim">每週簡報重點與原始來源，依日期收錄。</p></header>'+''.join(brief_sections)))
     write(out / 'news/latest.json', json.dumps(latest or dict(week_of='', updated='', items=[]), ensure_ascii=False, indent=2)+'\n')
-    write(out / 'assets/og-default.png', og_png())
+    if not (out / 'assets/og-default.png').exists():  # Mac/Ubuntu 的 zlib 產出 bytes 不同,已存在就不重寫
+        write(out / 'assets/og-default.png', og_png())
     routes = ['', 'articles/', 'news/', 'spots/', 'creatures/', 'ranking/'] + ['articles/'+a['slug']+'/' for a in articles]
     routes += [str(path.parent.relative_to(out))+'/' for path in sorted((out/'spots').glob('*/index.html'))]
     sitemap = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'+''.join('<url><loc>'+xml_escape(SITE_URL+'/'+route)+'</loc></url>' for route in routes)+'</urlset>\n'
