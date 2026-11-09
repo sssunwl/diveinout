@@ -1,0 +1,39 @@
+name: 每日建站
+on:
+  schedule:
+    - cron: "30 2 * * *"
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: daily-build
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/checkout@v5
+        with:
+          repository: sssunwl/SakiDive
+          path: _src/SakiDive
+          fetch-depth: 0
+          persist-credentials: false
+      - name: 建置靜態頁
+        env:
+          SAKIDIVE_DIR: _src/SakiDive
+        run: python3 tools/build_site.py
+      - name: 提交建站結果
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- articles news assets spots sitemap.xml robots.txt
+          if git diff --cached --quiet; then
+            echo '建站產物沒有變更'
+            exit 0
+          fi
+          git commit -m "每日建站 $(TZ=Asia/Tokyo date +%F)"
+          git push

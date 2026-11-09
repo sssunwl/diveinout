@@ -1,0 +1,62 @@
+{
+  "week_of": "2026-11-09",
+  "updated": "2026-11-09",
+  "items": [
+    {
+      "title": "斐濟軟珊瑚潛點深度指南",
+      "summary": "Scuba Diver Life 最新文章深入探討斐濟作為軟珊瑚之都，潮汐、水流與季節如何影響大溪地、那美納、布萊海域和貝卡等潛點的潛水體驗，並提供規劃行程的建議。",
+      "source_name": "ScubaDiverLife",
+      "source_url": "https://scubadiverlife.com/",
+      "category": "本週情報",
+      "emoji": "🌊"
+    },
+    {
+      "title": "全球油污衛星研究警示",
+      "summary": "最新衛星分析估計，每年有158萬平方公里的海洋被油污覆蓋，主要集中在沿海地區，這項研究對潛水員意味著什麼值得關注。",
+      "source_name": "ScubaDiverLife",
+      "source_url": "https://scubadiverlife.com/",
+      "category": "本週情報",
+      "emoji": "🌊"
+    },
+    {
+      "title": "BSAC 2025潛水事故報告出爐",
+      "summary": "英國潛水教練協會(BSAC)發表2025年潛水事故報告，從中可學習獨潛等潛水活動的經驗與教訓。",
+      "source_name": "ScubaDiverLife",
+      "source_url": "https://scubadiverlife.com/",
+      "category": "本週情報",
+      "emoji": "🌊"
+    },
+    {
+      "title": "PADI 提示：多元環境潛水提升技能",
+      "summary": "PADI最新文章建議潛水員透過在不同環境下潛水來提升技能，例如面對強流、沈船、冷水或洞穴等。",
+      "source_name": "PADI Blog",
+      "source_url": "https://blog.padi.com/",
+      "category": "本週情報",
+      "emoji": "🌊"
+    },
+    {
+      "title": "小琉球自由潛水人船衝突事件",
+      "summary": "小琉球海域發生百噸漁船險輾過自由潛水團的驚險事件。自由潛水發展協會發聲，呼籲船隻發現潛水活動時應提高警戒並保持安全距離，履行避碰義務。",
+      "source_name": "自由時報-自由潛水",
+      "source_url": "https://news.ltn.com.tw/topic/%E8%87%AA%E7%94%B1%E6%BD%9B%E6%B0%B4",
+      "category": "本週情報",
+      "emoji": "🌊"
+    },
+    {
+      "title": "潛水船宿保險重要性提示",
+      "summary": "BlueTrend 提醒潛水員，若船宿期間發生擱淺事故，多數保險可能不予理賠，建議查證 DAN 及 DiveAssure 的官方回覆。",
+      "source_name": "BlueTrend 藍色脈動",
+      "source_url": "https://bluetrend.media/",
+      "category": "本週情報",
+      "emoji": "🌊"
+    },
+    {
+      "title": "自閉症兒童的深藍世界",
+      "summary": "EZDIVE 雜誌報導自閉症兒童透過潛水探索海洋的故事，潛水成為他們與世界連結的溫柔紐帶。",
+      "source_name": "EZDIVE 易潛雜誌",
+      "source_url": "https://www.ezdivemag.com/zh/",
+      "category": "本週情報",
+      "emoji": "🌊"
+    }
+  ]
+}

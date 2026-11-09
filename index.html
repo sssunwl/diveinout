@@ -130,6 +130,8 @@
   .about strong{color:var(--ink)}
   .pill{display:inline-block;border:1px solid var(--edge);color:var(--accent);border-radius:99px;padding:3px 12px;margin:3px;font-size:12px;font-weight:700}
   footer{padding:44px 0 64px;color:var(--dim);font-size:12px}
+  .article-nav{position:absolute;top:28px;left:max(24px,calc((100% - 960px)/2));display:flex;gap:24px;z-index:3;font-size:13px}
+  #latestArticles{margin-top:42px}#latestArticles .article-cover{width:100%;height:auto;border-radius:8px;margin-bottom:16px}#latestArticles .card{min-width:0;overflow-wrap:anywhere}#latestArticles h3{line-height:1.3;letter-spacing:0}
   .loading{color:var(--dim);opacity:.6}
 </style>
 </head>
@@ -141,6 +143,8 @@
   <div class="rglow" id="rglow"><span class="rlab" id="rlab"></span></div>
   <div id="rticks"></div>
 </nav>
+
+<nav class="article-nav mono" aria-label="文章與情報"><a href="articles/">文章</a><a href="news/">情報</a></nav>
 
 <header class="hero wrap" id="top">
   <div class="kick">PAN-ASIA DIVE MAG</div>
@@ -156,6 +160,7 @@
   <h2>本週情報</h2>
   <p class="lead">滑過看標題,停一下展開重點,點下去看全部。Saki 每週從 7 個中英潛水平台撈的。</p>
   <div class="grid" id="newsGrid"><div class="ncard loading">載入中…</div></div>
+  <div id="latestArticles"><div class="lab mono">LATEST STORIES / 最新文章</div><h3 style="margin:14px 0 20px">最新 3 篇文章</h3><div class="grid g3" id="articleGrid"><div class="card loading">載入中…</div></div></div>
 </section>
 
 <!-- 5m 新手 -->
@@ -328,31 +333,20 @@ document.querySelectorAll(".reveal").forEach(el=>io.observe(el));
 document.querySelectorAll(".kh").forEach(h=>h.onclick=()=>h.parentElement.classList.toggle("open"));
 
 // 情報卡(標題→hover展開→點擊看全部)
-const RAW="https://raw.githubusercontent.com/sssunwl/SakiDive/main/";
-const API="https://api.github.com/repos/sssunwl/SakiDive/contents/00_%E6%AF%8F%E6%97%A5%E7%B0%A1%E5%A0%B1";
 (async()=>{const G=document.getElementById("newsGrid");try{
-  const list=await(await fetch(API)).json();
-  const latest=list.filter(f=>f.name.endsWith(".md")).map(f=>f.name).sort().pop();
-  const md=await(await fetch(RAW+"00_%E6%AF%8F%E6%97%A5%E7%B0%A1%E5%A0%B1/"+encodeURIComponent(latest))).text();
-  const m=md.match(/##\s*🔑[^\n]*\n([\s\S]*?)(?=\n##\s)/);
-  if(!m){G.innerHTML="<div class='ncard'>本週情報整理中…</div>";return;}
-  const items=[...m[1].matchAll(/\*\s+\*\*(.+?)\*\*[:：]([\s\S]*?)(?=\n\*\s+\*\*|$)/g)].slice(0,6);
-  G.innerHTML=items.map((it,i)=>{
-    const body=it[2].replace(/\[[^\]]*\]\([^)]*\)/g,"").replace(/→\s*對我方啟示[\s\S]*/,"")
-      .replace(/抓取:[\d-]+/g,"").replace(/⚠️需覆核/g,"").replace(/[\*→]/g,"").replace(/\s+/g," ").trim();
-    return `<div class="ncard" data-full="${body.replace(/"/g,'&quot;')}" data-t="${it[1].replace(/"/g,'&quot;')}">
-      <div class="nn">NEWS ${String(i+1).padStart(2,"0")}</div><h3>${it[1]}</h3>
-      <div class="full">${body.slice(0,80)}…</div><div class="more">點擊看全部 ↗</div></div>`;
-  }).join("");
+  const d=await(await fetch("./news/latest.json")).json();
+  if(!d.items?.length){G.innerHTML="<div class='ncard'>本週情報整理中…</div>";return;}
+  G.innerHTML=d.items.slice(0,6).map((it,i)=>`<div class="ncard" data-full="${esc(it.summary)}" data-t="${esc(it.title)}"><div class="nn">NEWS ${String(i+1).padStart(2,"0")}</div><h3>${esc(it.title)}</h3><div class="full">${esc(it.summary.slice(0,80))}…</div><div class="more">點擊看全部 ↗</div></div>`).join("");
   G.querySelectorAll(".ncard").forEach(c=>c.onclick=()=>openNews(c.dataset.t,c.dataset.full));
 }catch(e){G.innerHTML="<div class='ncard'>情報載入中,稍後再來 🐟</div>";}})();
+
 function openNews(t,b){const o=document.createElement("div");
   o.style.cssText="position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;padding:22px;background:rgba(2,10,16,.7);backdrop-filter:blur(4px)";
   o.innerHTML=`<div style="max-width:460px;background:#07202b;border:1px solid var(--edge);border-radius:16px;padding:26px;position:relative">
     <div class="mono" style="color:var(--accent);font-size:11px">NEWS</div>
-    <h3 style="font-size:20px;margin:6px 0 12px">${t}</h3>
-    <p style="color:var(--dim);font-weight:300;line-height:1.8">${b}</p>
-    <div style="margin-top:16px"><a href="https://github.com/sssunwl/SakiDive" target="_blank" style="font-size:12px">看完整簡報與來源 ↗</a></div></div>`;
+    <h3 style="font-size:20px;margin:6px 0 12px">${esc(t)}</h3>
+    <p style="color:var(--dim);font-weight:300;line-height:1.8">${esc(b)}</p>
+    <div style="margin-top:16px"><a href="news/" style="font-size:12px">看完整簡報與來源 ↗</a></div></div>`;
   o.onclick=e=>{if(e.target===o)o.remove()};document.body.appendChild(o);}
 
 // 海洋日誌：每週編輯從已查證資料中挑選，資料由 GitHub Actions 寫入 weekly.json。
@@ -378,6 +372,9 @@ fetch("spots.json").then(r=>{if(!r.ok)throw new Error("spots.json");return r.jso
   G.innerHTML=d.items.slice(0,3).map(x=>`<article class="card"><div class="emo">${esc(x.emoji||"🌊")}</div><div class="mono" style="color:var(--accent);font-size:11px">${esc(x.category||"本週精選")}</div><h3>${esc(x.title)}</h3><p>${esc(x.summary)}</p><a href="${esc(x.source_url)}" target="_blank" rel="noopener" style="font-size:12px">來源：${esc(x.source_name||"查看資料")} ↗</a></article>`).join("");
 }catch(e){G.innerHTML='<div class="card">本週精選載入中，稍後再來 🐟</div>';}})();
 
+fetch("articles/index.json").then(r=>{if(!r.ok)throw new Error("articles");return r.json()}).then(items=>{
+ document.getElementById("articleGrid").innerHTML=items.slice(0,3).map(a=>`<a class="card" href="articles/${encodeURIComponent(a.slug)}/"><img class="article-cover" src="${esc(a.cover)}" width="1200" height="630" loading="lazy" alt="${esc(a.title)}"><h3>${esc(a.title)}</h3><p>${esc(a.summary)}</p><time class="mono">${esc(a.date)}</time></a>`).join("");
+}).catch(()=>{document.getElementById("articleGrid").innerHTML='<div class="card">文章整理中，<a href="articles/">查看文章列表 →</a></div>'});
 </script>
 </body>
 </html>

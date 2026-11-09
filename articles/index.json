@@ -1,0 +1,224 @@
+[
+  {
+    "slug": "manta-whale-shark-etiquette",
+    "title": "與鬼蝠魟、鯨鯊同游的守則與亞洲熱門潛點",
+    "category": "ocean",
+    "date": "2026-10-04",
+    "summary": "潛入蔚藍深海，與海洋中最溫柔的巨人——鬼蝠魟和鯨鯊共游，是許多潛水員的夢幻清單首選。牠們優雅的身影和龐大的體型，總能帶來令人屏息的感動。然而，作為負責任的潛水員",
+    "words": 2021,
+    "spots": [
+      "ishigaki-manta",
+      "oslob",
+      "maldives",
+      "nusa-penida"
+    ],
+    "cover": "assets/covers/manta-whale-shark-etiquette.svg",
+    "legacy": true
+  },
+  {
+    "slug": "titan-triggerfish",
+    "title": "泰坦砲彈魚：辨識、護巢行為與潛點遇到時怎麼應對",
+    "category": "ocean",
+    "date": "2026-10-02",
+    "summary": "潛水員們，當我們在熱帶海域探索繽紛海底世界時，總會遇到各種奇妙的海洋生物。其中，有一種魚類以其鮮明的個性和強烈的領地意識而聞名，那就是「泰坦砲彈魚」（Titan",
+    "words": 1465,
+    "spots": [],
+    "cover": "assets/covers/titan-triggerfish.svg",
+    "legacy": true
+  },
+  {
+    "slug": "coral-restoration",
+    "title": "潛水員如何參與珊瑚復育：亞洲案例與公民科學行動",
+    "category": "ocean",
+    "date": "2026-10-01",
+    "summary": "潛水員們，你們是否曾被海底五彩斑斕的珊瑚礁深深吸引？這些被譽為「海洋熱帶雨林」的生態系統，不僅是無數海洋生物的家園，更是維持海洋健康不可或缺的基石。然而，氣候變",
+    "words": 2149,
+    "spots": [],
+    "cover": "assets/covers/coral-restoration.svg",
+    "legacy": true
+  },
+  {
+    "slug": "liveaboard-guide",
+    "title": "船宿潛水攻略：新手怎麼選航線、行程節奏與行李打包",
+    "category": "spot",
+    "date": "2026-09-30",
+    "summary": "潛入蔚藍大海，探索人跡罕至的秘境，是許多潛水員的夢想。而船宿潛水（Liveaboard Diving）正是實現這個夢想的最佳方式！想像一下，每天醒來就在潛點，早",
+    "words": 2297,
+    "spots": [],
+    "cover": "assets/covers/liveaboard-guide.svg",
+    "legacy": true
+  },
+  {
+    "slug": "bunaken-lembeh-guide",
+    "title": "印尼 Bunaken 與 Lembeh 微距潛點深度攻略",
+    "category": "spot",
+    "date": "2026-09-28",
+    "summary": "印尼北蘇拉威西（North Sulawesi）是潛水員心中的寶藏之地，擁有截然不同的潛水風貌：一邊是壯麗的布納肯（Bunaken）海洋公園，另一邊則是微距天堂藍",
+    "words": 1562,
+    "spots": [],
+    "cover": "assets/covers/bunaken-lembeh-guide.svg",
+    "legacy": true
+  },
+  {
+    "slug": "dumaguete-apo-reef-guide",
+    "title": "菲律賓 Dumaguete 與 Apo Reef 深度攻略",
+    "category": "spot",
+    "date": "2026-09-27",
+    "summary": "菲律賓是潛水天堂，而杜馬蓋地（Dumaguete）與阿波礁（Apo Reef）更是其中兩顆耀眼的明珠。雖然地理位置相距甚遠，但它們各自以獨特的海洋生態吸引著全球",
+    "words": 1998,
+    "spots": [],
+    "cover": "assets/covers/dumaguete-apo-reef-guide.svg",
+    "legacy": true
+  },
+  {
+    "slug": "palau-guide",
+    "title": "帛琉潛旅攻略：主要潛點、船潛季節與禁用防曬等規範",
+    "category": "spot",
+    "date": "2026-09-26",
+    "summary": "潛入帛琉，探索「上帝的水族箱」！這個位於西太平洋的島嶼國家，以其豐富多樣的海洋生態和世界級潛點聞名，被譽為全球十大潛水勝地之一 。帛琉由約340個大小島嶼組成，",
+    "words": 2384,
+    "spots": [
+      "blue-corner"
+    ],
+    "cover": "assets/covers/palau-guide.svg",
+    "legacy": true
+  },
+  {
+    "slug": "pre-dive-safety-checklist",
+    "title": "潛水行前安全檢查清單（下水前夥伴檢查與常見疏失）",
+    "category": "safety",
+    "date": "2026-09-25",
+    "summary": "潛水行前安全檢查清單：下水前夥伴檢查與常見疏失",
+    "words": 2175,
+    "spots": [],
+    "cover": "assets/covers/pre-dive-safety-checklist.svg",
+    "legacy": true
+  },
+  {
+    "slug": "diving-gear-care",
+    "title": "裝備保養：調節器、BCD、防寒衣的日常清洗與收納",
+    "category": "gear",
+    "date": "2026-09-24",
+    "summary": "潛水，是探索海底世界的奇妙旅程，而我們的潛水裝備，就是這趟旅程中最忠實的夥伴。為了確保每次潛水都能安全又盡興，裝備的日常清洗與收納可說是潛水員的「必修課」。海水",
+    "words": 2104,
+    "spots": [],
+    "cover": "assets/covers/diving-gear-care.svg",
+    "legacy": true
+  },
+  {
+    "slug": "beginner-diving-gear",
+    "title": "新手裝備選購：面鏡、蛙鞋、防寒衣怎麼挑與預算帶（入門／進階）",
+    "category": "gear",
+    "date": "2026-09-22",
+    "summary": "哈囉，潛水夥伴們！準備好踏入繽紛的水下世界了嗎？對於潛水新手來說，挑選第一套個人裝備總是既興奮又有點不知所措。別擔心，Saki 這次要來跟大家分享面鏡、蛙鞋和防",
+    "words": 2134,
+    "spots": [],
+    "cover": "assets/covers/beginner-diving-gear.svg",
+    "legacy": true
+  },
+  {
+    "slug": "scuba-course-costs",
+    "title": "台灣、沖繩、菲律賓 scuba 考證費用行情表（逐筆標來源與抓取日）",
+    "category": "course",
+    "date": "2026-09-19",
+    "summary": "潛進蔚藍：台灣、沖繩、菲律賓水肺潛水考證費用大解析",
+    "words": 1976,
+    "spots": [],
+    "cover": "assets/covers/scuba-course-costs.svg",
+    "legacy": true
+  },
+  {
+    "slug": "diving-certifications-compared",
+    "title": "SSI vs PADI vs AIDA vs Molchanovs：定位、訓練路徑與難度比較",
+    "category": "course",
+    "date": "2026-09-18",
+    "summary": "潛入蔚藍，探索水下世界，是許多人夢寐以求的體驗。然而，在踏上這段旅程之前，選擇適合自己的潛水認證系統是關鍵的第一步。今天，Saki 將帶大家一窺四大主流潛水認證",
+    "words": 2573,
+    "spots": [],
+    "cover": "assets/covers/diving-certifications-compared.svg",
+    "legacy": true
+  },
+  {
+    "slug": "first-dive-computer",
+    "title": "新手潛水電腦選擇重點",
+    "category": "gear",
+    "date": "2026-09-17",
+    "summary": "潛入湛藍大海，探索繽紛海底世界，是許多人夢寐以求的體驗。對於剛取得潛水證照的新手來說，除了面鏡、蛙鞋、防寒衣等基本裝備，潛水電腦錶更是確保潛水安全、提升潛水樂趣",
+    "words": 2126,
+    "spots": [],
+    "cover": "assets/covers/first-dive-computer.svg",
+    "legacy": true
+  },
+  {
+    "slug": "decompression-sickness-safety",
+    "title": "減壓病預防、警訊與就醫原則",
+    "category": "safety",
+    "date": "2026-09-16",
+    "summary": "潛入湛藍海底，探索繽紛世界，是許多潛水愛好者的夢想。然而，在享受海洋魅力的同時，我們也必須正視潛水活動可能帶來的風險，其中「減壓病」（Decompression",
+    "words": 2176,
+    "spots": [],
+    "cover": "assets/covers/decompression-sickness-safety.svg",
+    "legacy": true
+  },
+  {
+    "slug": "neutral-buoyancy-practice",
+    "title": "中性浮力練習與安全界線",
+    "category": "beginner",
+    "date": "2026-09-15",
+    "summary": "潛入蔚藍，感受無重力般的自由，是許多潛水愛好者夢寐以求的境界。而要達到這種優雅自在的「水中飛行」，「中性浮力」絕對是你的潛水靈魂技巧。掌握好中性浮力，不僅能讓你",
+    "words": 1634,
+    "spots": [],
+    "cover": "assets/covers/neutral-buoyancy-practice.svg",
+    "legacy": true
+  },
+  {
+    "slug": "equalization-guide",
+    "title": "平壓（耳壓平衡）技巧、常見問題與何時停止下潛",
+    "category": "safety",
+    "date": "2026-09-14",
+    "summary": "潛入蔚藍大海，探索神秘的水下世界，是許多人夢寐以求的體驗。然而，在享受潛水樂趣之前，掌握「平壓」（耳壓平衡）這項關鍵技能至關重要。平壓不僅能保護我們的耳朵免受傷",
+    "words": 1844,
+    "spots": [],
+    "cover": "assets/covers/equalization-guide.svg",
+    "legacy": true
+  },
+  {
+    "slug": "sunabe-guide",
+    "title": "砂邊 Sunabe 深度攻略（入水點、岸潛條件、夜潛與安全）",
+    "category": "spot",
+    "date": "2026-09-07",
+    "summary": "哈囉，潛水夥伴們！我是 Saki，今天我們要一起「潛」進沖繩本島中部，那個以豐富軟珊瑚和友善岸潛聞名的潛水天堂——砂邊（Sunabe）。這裡不僅是潛水新手的理想",
+    "words": 1681,
+    "spots": [
+      "sunabe"
+    ],
+    "cover": "assets/covers/sunabe-guide.svg",
+    "legacy": true
+  },
+  {
+    "slug": "okinawa-blue-cave-guide",
+    "title": "青之洞窟深度攻略（交通、實際流程、海況替代方案、行前清單）",
+    "category": "spot",
+    "date": "2026-09-07",
+    "summary": "沖繩的「青之洞窟」以其神秘的湛藍光芒，成為許多潛水與浮潛愛好者心中的夢幻秘境。這座位於恩納村真榮田岬的海蝕洞穴，因陽光穿透水面，折射在白色沙底上，營造出如夢似幻",
+    "words": 1751,
+    "spots": [
+      "okinawa-bluecave"
+    ],
+    "cover": "assets/covers/okinawa-blue-cave-guide.svg",
+    "legacy": true
+  },
+  {
+    "slug": "kerama-guide",
+    "title": "慶良間群島深度攻略（船潛選擇、季節、生態與行前）",
+    "category": "spot",
+    "date": "2026-09-07",
+    "summary": "慶良間群島深度攻略：潛進「慶良間藍」的夢幻世界",
+    "words": 1941,
+    "spots": [
+      "kerama"
+    ],
+    "cover": "assets/covers/kerama-guide.svg",
+    "legacy": true
+  }
+]
