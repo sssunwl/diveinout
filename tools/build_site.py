@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build Phase A static articles/news. No network, dependencies or git writes.
+"""Build static articles, news and Phase B spot database/pages. No network, dependencies or git writes.
 
 SAKIDIVE_DIR=/Users/sws/SakiDiveDB python3 tools/build_site.py
 SITE_URL defaults to the existing GitHub Pages project URL.
@@ -17,6 +17,7 @@ from urllib.parse import urlsplit
 from xml.sax.saxutils import escape as xml_escape
 
 from covers import cover_svg, og_png
+import spot_pages
 
 ROOT = Path(__file__).resolve().parent.parent
 SKIP = {'README.md', '沖繩.md', '課程證照資源.md'}
@@ -293,7 +294,7 @@ def shell(title, summary, route, content, structured=None):
     ld = '<script type="application/ld+json">' + json.dumps(structured, ensure_ascii=False).replace('<', '\\u003c') + '</script>' if structured else ''
     return f'''<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{html.escape(title)} ｜ DiveInOut</title>
 <meta name="description" content="{html.escape(summary, quote=True)}"><meta property="og:title" content="{html.escape(title, quote=True)}"><meta property="og:description" content="{html.escape(summary, quote=True)}"><meta property="og:image" content="{SITE_URL}/assets/og-default.png"><link rel="canonical" href="{html.escape(absolute, quote=True)}">{ld}<style>{CSS}</style></head>
-<body><div class="wrap"><nav aria-label="主要導覽"><a class="lab" href="{prefix}">← DiveInOut</a><a href="{prefix}articles/">文章</a><a href="{prefix}news/">情報</a><a href="{prefix}spots/">潛點地圖</a></nav><main>{content}</main><footer><span class="lab">DiveInOut / Pan-Asia Dive Mag</span><p>價格、季節及規範可能變動，出發前請向當地專業人員覆核。</p></footer></div></body></html>'''
+<body><div class="wrap"><nav aria-label="主要導覽"><a class="lab" href="{prefix}">← DiveInOut</a><a href="{prefix}articles/">文章</a><a href="{prefix}news/">情報</a><a href="{prefix}spots/">潛點地圖</a><a href="{prefix}ranking/">排名</a></nav><main>{content}</main><footer><span class="lab">DiveInOut / Pan-Asia Dive Mag</span><p>價格、季節及規範可能變動，出發前請向當地專業人員覆核。</p></footer></div></body></html>'''
 
 
 def card(article, prefix='../'):
@@ -326,8 +327,12 @@ def build(db, out=ROOT):
     if not db.is_dir():
         raise ValueError('SAKIDIVE_DIR does not exist: ' + str(db))
     articles = read_articles(db)
-    spots_path = ROOT / 'spots.json'
-    spots = {s['id']: s for s in json.loads(spots_path.read_text())['spots']}
+    spot_data, areas, creatures = spot_pages.load(ROOT, db, articles)
+    write(out / 'spots.json', json.dumps(spot_data, ensure_ascii=False, indent=2)+'\n')
+    write(out / 'areas.json', json.dumps(areas, ensure_ascii=False, indent=2)+'\n')
+    write(out / 'assets/creatures.svg', (ROOT / 'assets/creatures.svg').read_text())
+    spot_pages.generate(spot_data, areas, creatures, articles, out, write, shell, SITE_URL)
+    spots = {s['id']: s for s in spot_data['spots']}
     for a in articles:
         write(out / a['cover'], cover_svg(a['slug'], a['title'], a['category']))
         related = [x for x in articles if x['category'] == a['category'] and x['slug'] != a['slug']][:3]
@@ -361,7 +366,7 @@ addEventListener('hashchange',revealSource);revealSource();
     write(out / 'news/index.html', shell('每週情報', '潛旅、海洋與潛水安全的每週簡報重點。', 'news/', '<header class="intro"><div class="lab">News / 海面情報</div><h1>從海面，讀懂海裡。</h1><p class="dim">每週簡報重點與原始來源，依日期收錄。</p></header>'+''.join(brief_sections)))
     write(out / 'news/latest.json', json.dumps(latest or dict(week_of='', updated='', items=[]), ensure_ascii=False, indent=2)+'\n')
     write(out / 'assets/og-default.png', og_png())
-    routes = ['', 'articles/', 'news/', 'spots/', 'creatures/'] + ['articles/'+a['slug']+'/' for a in articles]
+    routes = ['', 'articles/', 'news/', 'spots/', 'creatures/', 'ranking/'] + ['articles/'+a['slug']+'/' for a in articles]
     routes += [str(path.parent.relative_to(out))+'/' for path in sorted((out/'spots').glob('*/index.html'))]
     sitemap = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'+''.join('<url><loc>'+xml_escape(SITE_URL+'/'+route)+'</loc></url>' for route in routes)+'</urlset>\n'
     write(out / 'sitemap.xml', sitemap)

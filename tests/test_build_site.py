@@ -125,4 +125,60 @@ class BuildTests(unittest.TestCase):
             ET.parse(out/'sitemap.xml')
 
 
+    def test_spot_schema_scores_and_pages(self):
+        import spot_pages
+        import score
+        with tempfile.TemporaryDirectory() as tmp:
+            db=Path(tmp)/'db'; out=Path(tmp)/'out'; db.mkdir()
+            b.build(db,out)
+            data=json.loads((out/'spots.json').read_text())
+            areas=json.loads((out/'areas.json').read_text())
+            spots={s['id']:s for s in data['spots']}
+            okinawa={a['id'] for a in areas if a['region']=='okinawa'}
+            self.assertEqual(sum(s['area'] in okinawa for s in spots.values()),9)
+            self.assertEqual(len(list((out/'spots').glob('*/index.html'))),30)
+            for sid in spots:
+                page=(out/'spots'/sid/'index.html').read_text()
+                self.assertEqual(page.count('data-month='),12)
+                self.assertEqual(page.count('<small>待查證</small>'),12)
+            # Global maximum is 5 species. Kenting: 5/5*30+12/12*20+20+0+0=70.
+            self.assertEqual(spots['kenting']['score']['total'],70)
+            self.assertEqual(spots['kenting']['score']['parts'],dict(diversity=30,season=20,beginner=20,signature=0,trust=0))
+            # Nusa Penida: 3/5*30+7/12*20+12+15+0=56.666..., rounds to 57.
+            self.assertEqual(spots['nusa-penida']['score']['total'],57)
+            self.assertAlmostEqual(sum(spots['nusa-penida']['score']['parts'].values()),56+2/3)
+            self.assertNotIn('熱門',(out/'ranking/index.html').read_text())
+            self.assertEqual(data['spots'],sorted(data['spots'],key=lambda x:(-x['score']['total'],x['id'])))
+            for a in areas:
+                rows=[s for s in spots.values() if s['area']==a['id']]
+                self.assertAlmostEqual(a['lat'],sum(s['lat'] for s in rows)/len(rows))
+            enrich=db/'data/spots';enrich.mkdir(parents=True)
+            (enrich/'kenting.json').write_text(json.dumps(dict(id='kenting',see='查證內容',monthly={'1':[{'c':'turtle','p':'high'}]},sources=[{'url':'https://example.org','title':'來源','checked':'2026-11-09'}])))
+            new={**spots['kenting'],'id':'kume-test','country':'japan','area':'kume-test','areaName':'久米測試區','lat':26,'lng':127}
+            (enrich/'kume-test.json').write_text(json.dumps(new))
+            b.build(db,out)
+            updated=json.loads((out/'spots.json').read_text())['spots']
+            k=next(s for s in updated if s['id']=='kenting')
+            self.assertEqual(k['see'],'查證內容');self.assertFalse(k['monthlySeed'])
+            self.assertEqual(k['monthly']['1'],[{'c':'turtle','p':'high'}]);self.assertEqual(k['monthly']['2'],[])
+            self.assertEqual(k['name'],spots['kenting']['name'])
+            a=next(a for a in json.loads((out/'areas.json').read_text()) if a['id']=='kume-test')
+            self.assertEqual((a['name'],a['region']),('久米測試區','okinawa'))
+            self.assertTrue((out/'spots/kume-test/index.html').exists())
+            before={str(p.relative_to(out)):p.read_bytes() for p in out.rglob('*') if p.is_file()}
+            b.build(db,out)
+            self.assertEqual(before,{str(p.relative_to(out)):p.read_bytes() for p in out.rglob('*') if p.is_file()})
+
+    def test_score_trust_and_rounding(self):
+        import datetime
+        import score
+        s=dict(id='test',months=[1],levelMin='advanced',tags=['manta','whaleshark','turtle','mola','hammer'],monthly={},sources=[{}, {}, {}],checked='2026-05-13')
+        score.calculate([s],datetime.date(2026,11,9))
+        self.assertEqual(s['score']['parts']['trust'],10)
+        self.assertEqual(s['score']['parts']['signature'],20)
+        s['checked']='2026-05-12'
+        score.calculate([s],datetime.date(2026,11,9))
+        self.assertEqual(s['score']['parts']['trust'],5)
+
+
 if __name__ == '__main__': unittest.main()

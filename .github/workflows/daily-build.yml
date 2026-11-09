@@ -30,7 +30,7 @@ jobs:
           set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add -- articles news assets spots sitemap.xml robots.txt
+          git add -- articles news assets spots ranking spots.json areas.json sitemap.xml robots.txt
           if git diff --cached --quiet; then
             echo '建站產物沒有變更'
             exit 0

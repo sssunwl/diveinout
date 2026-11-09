@@ -151,6 +151,7 @@
   .see-creatures{margin:8px 0 0;font-size:12px;color:var(--dim);line-height:1.6}
   .see-creature{color:var(--accent);text-decoration:none}
   .see-creature:hover{text-decoration:underline}
+ .geo-group{width:100%}.geo-group .chip-track{min-width:0;overflow-x:auto}.card-foot{flex-wrap:wrap;gap:10px}[hidden]{display:none!important}
 </style>
 </head>
 <body class="view-list">
@@ -209,17 +210,9 @@
         <button class="chip" type="button" data-filter="tag" data-value="mola">🌕 翻車魚</button>
       </div>
     </div>
-    <div class="filter-group">
-      <label class="filter-label mono" for="region">地區</label>
-      <div class="filter-actions">
-        <select id="region">
-          <option value="">全部地區</option><option value="okinawa">沖繩</option><option value="taiwan">台灣</option>
-          <option value="philippines">菲律賓</option><option value="palau">帛琉</option><option value="indonesia">印尼</option>
-          <option value="thailand">泰國</option><option value="malaysia">馬來西亞</option><option value="maldives">馬爾地夫</option><option value="egypt">埃及</option>
-        </select>
-        <button class="clear" id="clearFilters" type="button">清除篩選</button>
-      </div>
-    </div>
+    <div class="filter-group geo-group"><div class="filter-label mono">國家</div><div class="chip-track" id="countries"></div></div>
+    <div class="filter-group geo-group" id="areaGroup" hidden><div class="filter-label mono">地區</div><div class="chip-track" id="areas"></div></div>
+    <div class="filter-group"><button class="clear" id="clearFilters" type="button">清除篩選</button><a class="map-link" href="../ranking/">推薦排名 →</a></div>
   </div>
 </section>
 
@@ -258,36 +251,45 @@ const VALID={level:new Set(["beginner","intermediate","advanced"]),entry:new Set
   tag:new Set(Object.keys(TAGS)),region:new Set(["okinawa","taiwan","philippines","palau","indonesia","thailand","malaysia","maldives","egypt"])};
 const levelRank={beginner:0,intermediate:1,advanced:2};
 const currentMonth=Number(new Intl.DateTimeFormat("en-US",{month:"numeric",timeZone:"Asia/Taipei"}).format(new Date()));
-const state={month:null,level:null,entries:new Set(),tags:new Set(),region:null};
+const state={month:null,level:null,entries:new Set(),tags:new Set(),country:null,region:null};
+let areas=[],countries={japan:"日本",taiwan:"台灣",philippines:"菲律賓",palau:"帛琉",indonesia:"印尼",thailand:"泰國",malaysia:"馬來西亞",maldives:"馬爾地夫",egypt:"埃及"};
 let allSpots=[],filteredSpots=[],updated="",map,clusters,markers=new Map(),mapReady=false,requestedFocus=null;
 let creaturesBySpot=new Map();
 const mobileQuery=matchMedia("(max-width: 959px)");
 const esc=value=>String(value??"").replace(/[&<>\"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"})[c]);
 
+function geoControls(){
+ const chip=(v,n,active)=>`<button type="button" class="chip${active?' active':''}" aria-pressed="${active}" data-geo="${esc(v)}">${esc(n)}</button>`;
+ document.getElementById('countries').innerHTML=chip('', '全部',!state.country)+[...new Set(allSpots.map(s=>s.country))].sort((a,b)=>{const o=Object.keys(countries),i=x=>o.includes(x)?o.indexOf(x):99;return i(a)-i(b)||a.localeCompare(b)}).map(c=>chip(c,countries[c]||c,state.country===c)).join('');
+ const list=areas.filter(a=>a.country===state.country);document.getElementById('areaGroup').hidden=!state.country;
+ document.getElementById('areas').innerHTML=chip('','全部地區',!state.region)+(list.some(a=>a.region==='okinawa')?chip('okinawa','沖繩全部',state.region==='okinawa'):'')+list.map(a=>chip(a.id,a.name,state.region===a.id)).join('');
+}
+document.getElementById('countries').addEventListener('click',e=>{const b=e.target.closest('[data-geo]');if(b){state.country=b.dataset.geo||null;state.region=null;render()}});
+document.getElementById('areas').addEventListener('click',e=>{const b=e.target.closest('[data-geo]');if(b){state.region=b.dataset.geo||null;render()}});
 function restoreState(){
   const q=new URLSearchParams(location.search);const month=Number(q.get("m"));
   state.month=month>=1&&month<=12?month:null;
   state.level=VALID.level.has(q.get("lv"))?q.get("lv"):null;
   (q.get("e")||"").split(",").filter(x=>VALID.entry.has(x)).forEach(x=>state.entries.add(x));
   (q.get("t")||"").split(",").filter(x=>VALID.tag.has(x)).forEach(x=>state.tags.add(x));
-  state.region=VALID.region.has(q.get("r"))?q.get("r"):null;
+  state.country=q.get("c")||null;state.region=q.get("r")||null;
   requestedFocus=q.get("focus")||null;
 }
 function syncUrl(){
   const q=new URLSearchParams();
   if(state.month)q.set("m",state.month);if(state.level)q.set("lv",state.level);
   if(state.entries.size)q.set("e",[...state.entries].join(","));if(state.tags.size)q.set("t",[...state.tags].join(","));
-  if(state.region)q.set("r",state.region);
+  if(state.country)q.set("c",state.country);if(state.region)q.set("r",state.region);
   if(requestedFocus)q.set("focus",requestedFocus);
   history.replaceState(null,"",location.pathname+(q.size?"?"+q.toString().replace(/%2C/gi,","):"")+location.hash);
 }
-function hasFilters(){return Boolean(state.month||state.level||state.entries.size||state.tags.size||state.region)}
+function hasFilters(){return Boolean(state.month||state.level||state.entries.size||state.tags.size||state.country||state.region)}
 function updateControls(){
   document.querySelectorAll('[data-filter="month"]').forEach(b=>b.classList.toggle("active",String(state.month||"")===b.dataset.value));
   document.querySelectorAll('[data-filter="level"]').forEach(b=>b.classList.toggle("active",String(state.level||"")===b.dataset.value));
   document.querySelectorAll('[data-filter="entry"]').forEach(b=>b.classList.toggle("active",state.entries.has(b.dataset.value)));
   document.querySelectorAll('[data-filter="tag"]').forEach(b=>b.classList.toggle("active",state.tags.has(b.dataset.value)));
-  document.getElementById("region").value=state.region||"";
+  geoControls();
   document.getElementById("clearFilters").classList.toggle("show",hasFilters());
 }
 function matches(s){
@@ -296,7 +298,7 @@ function matches(s){
   if(state.level==="intermediate"&&!(["beginner","intermediate"].includes(s.levelMin)))return false;
   if(state.entries.size&&![...state.entries].some(x=>s.entry.includes(x)))return false;
   if(state.tags.size&&![...state.tags].some(x=>s.tags.includes(x)))return false;
-  return !state.region||s.region===state.region;
+  return (!state.country||s.country===state.country)&&(!state.region||s.area===state.region||areas.some(a=>a.id===s.area&&a.region===state.region)||(!state.country&&s.region===state.region));
 }
 function monthChart(s){
   const bars=Array.from({length:12},(_,i)=>`<span class="month-bar${s.months.includes(i+1)?' on':''}${state.month===i+1?' selected':''}"></span>`).join("");
@@ -316,7 +318,7 @@ function cardHtml(s){
     <div class="card-top"><h2>${esc(s.name)}</h2><span class="level-badge ${s.levelMin}">${LEVELS[s.levelMin]}</span></div>
     <div class="place">📍 ${esc(s.place)}</div><div class="meta">${entries}<span class="tag-icons">${tags}</span></div>
     ${monthChart(s)}<p class="see">${esc(s.see)}</p>${seeHtml(s,4)}<div class="card-foot">${s.warn?'<span class="warning">⚠️ 季節需覆核</span>':''}
-    <button class="map-link" type="button" data-map-id="${esc(s.id)}">在地圖上看 →</button></div></article>`;
+    <button class="map-link" type="button" data-map-id="${esc(s.id)}">在地圖上看 →</button><a class="map-link" href="./${esc(s.id)}/">潛點介紹 →</a></div></article>`;
 }
 function render(){
   filteredSpots=allSpots.filter(matches).sort((a,b)=>(levelRank[a.levelMin]-levelRank[b.levelMin])||a.name.localeCompare(b.name,"zh-Hant"));
@@ -325,13 +327,15 @@ function render(){
   const cards=document.getElementById("cards");
   cards.innerHTML=filteredSpots.length?filteredSpots.map(cardHtml).join(""):`<div class="empty">這個組合目前沒有潛點。試試放寬月份或程度？
     <button class="chip" type="button" data-empty-clear>清除篩選</button></div>`;
+  const label=state.region==='okinawa'?'沖繩':areas.find(a=>a.id===state.region)?.name||countries[state.country]||'';
+  if(label){document.getElementById('resultCount').textContent=label+' '+filteredSpots.length+' 個潛點';document.getElementById('mobileResultCount').textContent=label+' '+filteredSpots.length+' 個潛點';}
   syncUrl();updateControls();updateMap();
 }
 function popupHtml(s){
   return `<div class="pop"><h3>${esc(s.name)}</h3><div class="pop-place">📍 ${esc(s.place)}</div>
     <span class="pop-badge">難度 ${esc(s.level)}</span>${s.entry.map(x=>`<span class="pop-badge">${ENTRIES[x]}</span>`).join("")}
     <p><b>🗓 最佳季節</b>${esc(s.season)}${s.warn?' <span class="warning">⚠️需覆核</span>':''}</p>
-    <p><b>👀 亮點</b>${esc(s.see)}</p><p><b>⚠️ 注意</b>${esc(s.note)}</p>${seeHtml(s)}</div>`;
+    <p><b>👀 亮點</b>${esc(s.see)}</p><p><b>⚠️ 注意</b>${esc(s.note)}</p>${seeHtml(s)}<a href="./${esc(s.id)}/">潛點介紹 →</a></div>`;
 }
 function initMap(){
   map=L.map("map",{scrollWheelZoom:false,touchZoom:true,minZoom:2,maxZoom:16,worldCopyJump:true}).setView([15,110],3);
@@ -381,7 +385,7 @@ function focusSpot(id){
 }
 function hotMarker(id,on){const marker=markers.get(id),visible=marker&&clusters.getVisibleParent(marker);
   const el=visible?.getElement();if(el)el.classList.toggle("marker-hot",on)}
-function clearAll(){state.month=null;state.level=null;state.entries.clear();state.tags.clear();state.region=null;render()}
+function clearAll(){state.month=null;state.level=null;state.entries.clear();state.tags.clear();state.country=null;state.region=null;render()}
 function measureChrome(){document.documentElement.style.setProperty("--filters-height",document.getElementById("filters").offsetHeight+"px");
   document.documentElement.style.setProperty("--switch-height",document.getElementById("viewSwitch").offsetHeight+"px")}
 
@@ -392,15 +396,15 @@ document.querySelectorAll("[data-filter]").forEach(button=>button.addEventListen
   else{const set=type==="entry"?state.entries:state.tags;set.has(value)?set.delete(value):set.add(value)}render();
 }));
 document.getElementById("thisMonth").addEventListener("click",()=>{state.month=currentMonth;render()});
-document.getElementById("region").addEventListener("change",e=>{state.region=e.target.value||null;render()});
+
 document.getElementById("clearFilters").addEventListener("click",clearAll);
 document.getElementById("backToFilters").addEventListener("click",()=>document.getElementById("filters").scrollIntoView({behavior:"smooth",block:"start"}));
 document.getElementById("cards").addEventListener("click",e=>{if(e.target.closest("[data-empty-clear]")){clearAll();return}
-  const card=e.target.closest(".spot-card");if(card)focusSpot(card.dataset.id)});
-document.getElementById("cards").addEventListener("keydown",e=>{const card=e.target.closest(".spot-card");
+  if(e.target.closest("a"))return;const card=e.target.closest(".spot-card");if(card)focusSpot(card.dataset.id)});
+document.getElementById("cards").addEventListener("keydown",e=>{if(e.target.closest("a,button"))return;const card=e.target.closest(".spot-card");
   if(card&&(e.key==="Enter"||e.key===" ")){e.preventDefault();focusSpot(card.dataset.id)}});
 document.getElementById("cards").addEventListener("mouseover",e=>{const card=e.target.closest(".spot-card");if(card)hotMarker(card.dataset.id,true)});
-document.getElementById("cards").addEventListener("mouseout",e=>{const card=e.target.closest(".spot-card");
+document.getElementById("cards").addEventListener("mouseout",e=>{if(e.target.closest("a,button"))return;const card=e.target.closest(".spot-card");
   if(card&&!card.contains(e.relatedTarget))hotMarker(card.dataset.id,false)});
 document.querySelectorAll("[data-view]").forEach(b=>b.addEventListener("click",()=>setView(b.dataset.view)));
 new ResizeObserver(measureChrome).observe(document.getElementById("filters"));
@@ -409,7 +413,7 @@ addEventListener("resize",()=>{measureChrome();if(mapReady)setTimeout(()=>map.in
 restoreState();updateControls();measureChrome();
 const creaturesLoad=fetch("../creatures.json").then(r=>r.ok?r.json():null).catch(()=>null);
 fetch("../spots.json").then(r=>{if(!r.ok)throw new Error("spots.json");return r.json()}).then(async data=>{
-  const cr=await creaturesLoad;
+  areas=await fetch("../areas.json").then(r=>{if(!r.ok)throw new Error("areas.json");return r.json()});const cr=await creaturesLoad;
   (cr?.creatures||[]).forEach(c=>c.spots.forEach(id=>{if(!creaturesBySpot.has(id))creaturesBySpot.set(id,[]);creaturesBySpot.get(id).push(c)}));
   allSpots=data.spots;updated=data.updated;document.getElementById("dataNote").textContent=
     `季節與規範會變動，標 ⚠️ 者出發前請向當地潛店確認。座標為概略中心點。資料更新：${updated}`;

@@ -1,0 +1,178 @@
+[
+  {
+    "id": "anilao",
+    "name": "阿尼洛",
+    "country": "philippines",
+    "region": "anilao",
+    "lat": 13.75,
+    "lng": 120.9
+  },
+  {
+    "id": "bali",
+    "name": "峇里島",
+    "country": "indonesia",
+    "region": "bali",
+    "lat": -8.5,
+    "lng": 115.56
+  },
+  {
+    "id": "bohol",
+    "name": "薄荷島",
+    "country": "philippines",
+    "region": "bohol",
+    "lat": 9.52,
+    "lng": 123.68
+  },
+  {
+    "id": "cebu",
+    "name": "宿霧",
+    "country": "philippines",
+    "region": "cebu",
+    "lat": 10.243333333333334,
+    "lng": 123.62666666666667
+  },
+  {
+    "id": "coron",
+    "name": "科隆",
+    "country": "philippines",
+    "region": "coron",
+    "lat": 11.98,
+    "lng": 120.2
+  },
+  {
+    "id": "green-island",
+    "name": "綠島",
+    "country": "taiwan",
+    "region": "green-island",
+    "lat": 22.66,
+    "lng": 121.49
+  },
+  {
+    "id": "ishigaki",
+    "name": "石垣島",
+    "country": "japan",
+    "region": "okinawa",
+    "lat": 24.47,
+    "lng": 124.15
+  },
+  {
+    "id": "kenting",
+    "name": "墾丁",
+    "country": "taiwan",
+    "region": "kenting",
+    "lat": 21.95,
+    "lng": 120.78
+  },
+  {
+    "id": "kerama",
+    "name": "慶良間群島",
+    "country": "japan",
+    "region": "okinawa",
+    "lat": 26.18,
+    "lng": 127.35
+  },
+  {
+    "id": "komodo",
+    "name": "科莫多",
+    "country": "indonesia",
+    "region": "komodo",
+    "lat": -8.55,
+    "lng": 119.65
+  },
+  {
+    "id": "lanyu",
+    "name": "蘭嶼",
+    "country": "taiwan",
+    "region": "lanyu",
+    "lat": 22.06,
+    "lng": 121.53
+  },
+  {
+    "id": "maldives",
+    "name": "馬爾地夫",
+    "country": "maldives",
+    "region": "maldives",
+    "lat": 3.9,
+    "lng": 73.3
+  },
+  {
+    "id": "miyako",
+    "name": "宮古島",
+    "country": "japan",
+    "region": "okinawa",
+    "lat": 24.8,
+    "lng": 125.3
+  },
+  {
+    "id": "northeast-coast",
+    "name": "東北角",
+    "country": "taiwan",
+    "region": "northeast-coast",
+    "lat": 25.125,
+    "lng": 121.86
+  },
+  {
+    "id": "okinawa-main",
+    "name": "沖繩本島",
+    "country": "japan",
+    "region": "okinawa",
+    "lat": 26.47,
+    "lng": 127.8
+  },
+  {
+    "id": "palau",
+    "name": "帛琉",
+    "country": "palau",
+    "region": "palau",
+    "lat": 7.13,
+    "lng": 134.22
+  },
+  {
+    "id": "raja-ampat",
+    "name": "四王群島",
+    "country": "indonesia",
+    "region": "raja-ampat",
+    "lat": -0.5,
+    "lng": 130.52
+  },
+  {
+    "id": "red-sea",
+    "name": "紅海",
+    "country": "egypt",
+    "region": "red-sea",
+    "lat": 27.72,
+    "lng": 34.25
+  },
+  {
+    "id": "similan",
+    "name": "斯米蘭",
+    "country": "thailand",
+    "region": "similan",
+    "lat": 8.65,
+    "lng": 97.64
+  },
+  {
+    "id": "sipadan",
+    "name": "詩巴丹",
+    "country": "malaysia",
+    "region": "sipadan",
+    "lat": 4.11,
+    "lng": 118.63
+  },
+  {
+    "id": "xiaoliuqiu",
+    "name": "小琉球",
+    "country": "taiwan",
+    "region": "xiaoliuqiu",
+    "lat": 22.34,
+    "lng": 120.37
+  },
+  {
+    "id": "yonaguni",
+    "name": "與那國島",
+    "country": "japan",
+    "region": "okinawa",
+    "lat": 24.45,
+    "lng": 122.95
+  }
+]
