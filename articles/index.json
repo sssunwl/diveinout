@@ -1,5 +1,18 @@
 [
   {
+    "slug": "xiaoliuqiu-turtle",
+    "title": "小琉球:海龜幾乎必見的岸潛點,怎麼看龜才不打擾牠",
+    "category": "spot",
+    "date": "2026-11-14",
+    "summary": "小琉球，這座台灣唯一的珊瑚礁島嶼，以其清澈的海水、豐富的海洋生態，以及高機率與海龜相遇的機會，成為許多潛水愛好者心中的潛水天堂。無論你是潛水新手還是經驗豐富的老",
+    "words": 2071,
+    "spots": [
+      "xiaoliuqiu"
+    ],
+    "cover": "assets/covers/xiaoliuqiu-turtle.svg",
+    "legacy": false
+  },
+  {
     "slug": "mask-fog-fix",
     "title": "面鏡起霧與進水:新面鏡除膜、防霧劑、水下排水一次講清楚",
     "category": "gear",
