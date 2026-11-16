@@ -1,60 +1,52 @@
 {
-  "week_of": "2026-11-09",
-  "updated": "2026-11-09",
+  "week_of": "2026-11-16",
+  "updated": "2026-11-16",
   "items": [
     {
-      "title": "斐濟軟珊瑚潛點深度指南",
-      "summary": "Scuba Diver Life 最新文章深入探討斐濟作為軟珊瑚之都，潮汐、水流與季節如何影響大溪地、那美納、布萊海域和貝卡等潛點的潛水體驗，並提供規劃行程的建議。",
+      "title": "Suunto 與 Shearwater 於 DEMA 2026 發表腕錶型電腦錶計畫功能",
+      "summary": "Suunto 為旗下 Nautic 電腦錶新增了 NDL（免減壓極限）、減壓計劃器以及 CCR（密閉式循環呼吸系統）模式；Shearwater 則更新了 Perdix 3 電腦錶。這些更新大幅強化了休閒與技術潛水員在水下的規劃能力。(，)",
       "source_name": "ScubaDiverLife",
-      "source_url": "https://scubadiverlife.com/",
+      "source_url": "https://scubadiverlife.com/)，抓取:2026-11-16",
       "category": "本週情報",
       "emoji": "🌊"
     },
     {
-      "title": "全球油污衛星研究警示",
-      "summary": "最新衛星分析估計，每年有158萬平方公里的海洋被油污覆蓋，主要集中在沿海地區，這項研究對潛水員意味著什麼值得關注。",
+      "title": "全球最大人工魚礁「合眾國號（SS United States）」於佛羅里達外海沉沒就位",
+      "summary": "長達 990 英呎的著名巨輪 SS United States 已在佛羅里達州德斯廷（Destin）外海沉沒，正式化身為全球最大的人工魚礁，吸引全球沉船潛水愛好者關注。(，)",
       "source_name": "ScubaDiverLife",
-      "source_url": "https://scubadiverlife.com/",
+      "source_url": "https://scubadiverlife.com/)，抓取:2026-11-16",
       "category": "本週情報",
       "emoji": "🌊"
     },
     {
-      "title": "BSAC 2025潛水事故報告出爐",
-      "summary": "英國潛水教練協會(BSAC)發表2025年潛水事故報告，從中可學習獨潛等潛水活動的經驗與教訓。",
-      "source_name": "ScubaDiverLife",
-      "source_url": "https://scubadiverlife.com/",
-      "category": "本週情報",
-      "emoji": "🌊"
-    },
-    {
-      "title": "PADI 提示：多元環境潛水提升技能",
-      "summary": "PADI最新文章建議潛水員透過在不同環境下潛水來提升技能，例如面對強流、沈船、冷水或洞穴等。",
-      "source_name": "PADI Blog",
-      "source_url": "https://blog.padi.com/",
-      "category": "本週情報",
-      "emoji": "🌊"
-    },
-    {
-      "title": "小琉球自由潛水人船衝突事件",
-      "summary": "小琉球海域發生百噸漁船險輾過自由潛水團的驚險事件。自由潛水發展協會發聲，呼籲船隻發現潛水活動時應提高警戒並保持安全距離，履行避碰義務。",
-      "source_name": "自由時報-自由潛水",
-      "source_url": "https://news.ltn.com.tw/topic/%E8%87%AA%E7%94%B1%E6%BD%9B%E6%B0%B4",
-      "category": "本週情報",
-      "emoji": "🌊"
-    },
-    {
-      "title": "潛水船宿保險重要性提示",
-      "summary": "BlueTrend 提醒潛水員，若船宿期間發生擱淺事故，多數保險可能不予理賠，建議查證 DAN 及 DiveAssure 的官方回覆。",
+      "title": "亞洲潛旅與船宿全攻略精選發布",
+      "summary": "針對泛亞洲潛旅，最新整理出直飛汶萊探索世界級沉船與鑽油平台、印尼峇里島土蘭奔自由號新手友善沉船潛水、菲律賓媽媽島近距離觀賞長尾鯊，以及泰國斯米蘭船宿（Richelieu Rock）行程攻略。(，)",
       "source_name": "BlueTrend 藍色脈動",
-      "source_url": "https://bluetrend.media/",
+      "source_url": "https://bluetrend.media/)，抓取:2026-11-16",
       "category": "本週情報",
       "emoji": "🌊"
     },
     {
-      "title": "自閉症兒童的深藍世界",
-      "summary": "EZDIVE 雜誌報導自閉症兒童透過潛水探索海洋的故事，潛水成為他們與世界連結的溫柔紐帶。",
-      "source_name": "EZDIVE 易潛雜誌",
-      "source_url": "https://www.ezdivemag.com/zh/",
+      "title": "船宿潛水保險理賠爭議浮上檯面",
+      "summary": "針對船宿潛水遭遇船隻擱淺等事故，DAN 與 DiveAssure 官方回覆查證顯示，潛水員平時購買的潛水險多半無法理賠相關船宿事故損失，提醒潛水員需仔細檢視保單條款。(，)",
+      "source_name": "BlueTrend 藍色脈動",
+      "source_url": "https://bluetrend.media/)，抓取:2026-11-16",
+      "category": "本週情報",
+      "emoji": "🌊"
+    },
+    {
+      "title": "出國潛水小費行情與帛琉防曬嚴格法規公布",
+      "summary": "最新指南彙整 5 大潛水熱門國家的小費給予慣例，並特別提醒前往帛琉潛水務必注意防曬乳成份禁令，違規攜帶使用最高可開罰 1,000 美元⚠️需覆核。(，)",
+      "source_name": "潛進台灣 Taiwan Dive In",
+      "source_url": "https://www.taiwan-diving.org/)，抓取:2026-11-16",
+      "category": "本週情報",
+      "emoji": "🌊"
+    },
+    {
+      "title": "小琉球人船衝突頻傳，自由潛水安全管理引發高度關注",
+      "summary": "屏東小琉球海域發生逾百噸 CT5 漁船逼近大福西自潛試行潛點上浮學員事件，自潛協會疾呼船隻保持避碰距離；針對日益增加的自潛與水肺族群，地方亦持續推動分區專用浮球與旗幟以降低衝突。(，)",
+      "source_name": "自由時報-自由潛水",
+      "source_url": "https://news.ltn.com.tw/topic/%E8%87%AA%E7%94%B1%E6%BD%9B%E6%B0%B4)，抓取:2026-11-16",
       "category": "本週情報",
       "emoji": "🌊"
     }
