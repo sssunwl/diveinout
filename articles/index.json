@@ -1,5 +1,18 @@
 [
   {
+    "slug": "green-island-dive",
+    "title": "綠島:石朗、大白沙、柴口三個入門岸潛點與冬季東北季風",
+    "category": "spot",
+    "date": "2026-11-17",
+    "summary": "綠島，這座被太平洋環抱的翠綠小島，以其清澈的海水和豐富的海洋生態，成為許多潛水人心中探索海底世界的理想地點。無論你是剛踏入潛水領域的新手，還是希望在不同季節體驗",
+    "words": 2110,
+    "spots": [
+      "green-island"
+    ],
+    "cover": "assets/covers/green-island-dive.svg",
+    "legacy": false
+  },
+  {
     "slug": "seasickness-boat-dive",
     "title": "船潛暈船怎麼辦:暈船藥時機、上船位置與下水前的判斷",
     "category": "safety",
