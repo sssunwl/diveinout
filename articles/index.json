@@ -1,5 +1,18 @@
 [
   {
+    "slug": "miyako-caves",
+    "title": "宮古島:魔王宮殿、通池等洞穴地形潛點,程度要求與季節",
+    "category": "spot",
+    "date": "2026-11-20",
+    "summary": "宮古島，這片被譽為「宮古藍」的海洋，以其獨特的海底地形和清澈海水，吸引著世界各地的潛水愛好者。如果你正計畫一趟探索水下洞穴與拱門的潛水旅程，那麼下地島的魔王宮殿",
+    "words": 2750,
+    "spots": [
+      "miyako"
+    ],
+    "cover": "assets/covers/miyako-caves.svg",
+    "legacy": false
+  },
+  {
     "slug": "owd-vs-aowd",
     "title": "考完 OWD 要不要馬上接 AOWD:差在哪、什麼時候值得考",
     "category": "course",
