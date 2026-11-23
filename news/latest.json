@@ -1,52 +1,52 @@
 {
-  "week_of": "2026-11-16",
-  "updated": "2026-11-16",
+  "week_of": "2026-11-23",
+  "updated": "2026-11-23",
   "items": [
     {
-      "title": "Suunto 與 Shearwater 於 DEMA 2026 發表腕錶型電腦錶計畫功能",
-      "summary": "Suunto 為旗下 Nautic 電腦錶新增了 NDL（免減壓極限）、減壓計劃器以及 CCR（密閉式循環呼吸系統）模式；Shearwater 則更新了 Perdix 3 電腦錶。這些更新大幅強化了休閒與技術潛水員在水下的規劃能力。(，)",
+      "title": "DEMA 2026 潛水電腦錶新訊：Suunto 與 Shearwater 更新功能",
+      "summary": "潛水電腦錶品牌 Suunto 為 Nautic 系列新增免減壓極限 (NDL) 和減壓計畫功能，並加入循環式呼吸器 (CCR) 模式；Shearwater 則更新了 Perdix 3。這些更新提升了潛水安全規劃的精準度與使用者體驗。",
       "source_name": "ScubaDiverLife",
-      "source_url": "https://scubadiverlife.com/)，抓取:2026-11-16",
+      "source_url": "https://scubadiverlife.com/",
       "category": "本週情報",
       "emoji": "🌊"
     },
     {
-      "title": "全球最大人工魚礁「合眾國號（SS United States）」於佛羅里達外海沉沒就位",
-      "summary": "長達 990 英呎的著名巨輪 SS United States 已在佛羅里達州德斯廷（Destin）外海沉沒，正式化身為全球最大的人工魚礁，吸引全球沉船潛水愛好者關注。(，)",
+      "title": "SS United States 沉船成為佛羅里達州新人工礁",
+      "summary": "長達 990 英尺的 SS United States 已在佛羅里達州德斯坦外海沉沒，成為全球最大的人工礁。這將為潛水員提供新的探索點，並對海洋生態帶來影響。",
       "source_name": "ScubaDiverLife",
-      "source_url": "https://scubadiverlife.com/)，抓取:2026-11-16",
+      "source_url": "https://scubadiverlife.com/",
       "category": "本週情報",
       "emoji": "🌊"
     },
     {
-      "title": "亞洲潛旅與船宿全攻略精選發布",
-      "summary": "針對泛亞洲潛旅，最新整理出直飛汶萊探索世界級沉船與鑽油平台、印尼峇里島土蘭奔自由號新手友善沉船潛水、菲律賓媽媽島近距離觀賞長尾鯊，以及泰國斯米蘭船宿（Richelieu Rock）行程攻略。(，)",
+      "title": "Insta360 潛水攝影納入 PADI 課程",
+      "summary": "360 度影像技術的領導者 Insta360 正式被整合到 PADI 潛水課程中。這項創新可能使 360 影像成為海洋調查的新工具，並改變潛水攝影教學方式。",
       "source_name": "BlueTrend 藍色脈動",
-      "source_url": "https://bluetrend.media/)，抓取:2026-11-16",
+      "source_url": "https://bluetrend.media/",
       "category": "本週情報",
       "emoji": "🌊"
     },
     {
-      "title": "船宿潛水保險理賠爭議浮上檯面",
-      "summary": "針對船宿潛水遭遇船隻擱淺等事故，DAN 與 DiveAssure 官方回覆查證顯示，潛水員平時購買的潛水險多半無法理賠相關船宿事故損失，提醒潛水員需仔細檢視保單條款。(，)",
-      "source_name": "BlueTrend 藍色脈動",
-      "source_url": "https://bluetrend.media/)，抓取:2026-11-16",
-      "category": "本週情報",
-      "emoji": "🌊"
-    },
-    {
-      "title": "出國潛水小費行情與帛琉防曬嚴格法規公布",
-      "summary": "最新指南彙整 5 大潛水熱門國家的小費給予慣例，並特別提醒前往帛琉潛水務必注意防曬乳成份禁令，違規攜帶使用最高可開罰 1,000 美元⚠️需覆核。(，)",
-      "source_name": "潛進台灣 Taiwan Dive In",
-      "source_url": "https://www.taiwan-diving.org/)，抓取:2026-11-16",
-      "category": "本週情報",
-      "emoji": "🌊"
-    },
-    {
-      "title": "小琉球人船衝突頻傳，自由潛水安全管理引發高度關注",
-      "summary": "屏東小琉球海域發生逾百噸 CT5 漁船逼近大福西自潛試行潛點上浮學員事件，自潛協會疾呼船隻保持避碰距離；針對日益增加的自潛與水肺族群，地方亦持續推動分區專用浮球與旗幟以降低衝突。(，)",
+      "title": "小琉球漁船與自由潛水員衝突頻傳，協會呼籲加強航行警戒",
+      "summary": "小琉球海域發生百噸漁船逼近自由潛水團體的驚險事件。自由潛水發展協會已發聲明，呼籲航行船隻務必提高警戒，與潛水活動保持安全距離，並履行避碰義務。",
       "source_name": "自由時報-自由潛水",
-      "source_url": "https://news.ltn.com.tw/topic/%E8%87%AA%E7%94%B1%E6%BD%9B%E6%B0%B4)，抓取:2026-11-16",
+      "source_url": "https://news.ltn.com.tw/topic/%E8%87%AA%E7%94%B1%E6%BD%9B%E6%B0%B4",
+      "category": "本週情報",
+      "emoji": "🌊"
+    },
+    {
+      "title": "自由潛水正式納入 2026 年全民運動會項目",
+      "summary": "運動部已正式發文確認自由潛水將納入 2026 年全民運動會競賽項目。這項決策是在多位民代積極協調下成功促成，對台灣自由潛水運動發展具有里程碑意義。",
+      "source_name": "自由時報-自由潛水",
+      "source_url": "https://news.ltn.com.tw/topic/%E8%87%AA%E7%94%B1%E6%BD%9B%E6%B0%B4",
+      "category": "本週情報",
+      "emoji": "🌊"
+    },
+    {
+      "title": "出國潛水小費與帛琉防曬罰款提醒",
+      "summary": "最新資訊涵蓋了出國潛水小費的 5 個主要國家行情，並特別指出帛琉對部分防曬用品處以 1000 美元罰款。",
+      "source_name": "潛進台灣 Taiwan Dive In",
+      "source_url": "https://www.taiwan-diving.org/",
       "category": "本週情報",
       "emoji": "🌊"
     }
