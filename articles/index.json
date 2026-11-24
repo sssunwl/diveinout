@@ -1,5 +1,18 @@
 [
   {
+    "slug": "kenting-shore",
+    "title": "墾丁:後壁湖、萬里桐、山海岸潛,新手考證最常去的海",
+    "category": "spot",
+    "date": "2026-11-24",
+    "summary": "墾丁，台灣南端的熱情所在，不只以陽光沙灘聞名，更是潛水新手探索海底世界的理想起點。這裡有成熟便利的潛水環境，以及令人驚嘆的珊瑚礁生態系，無論是想體驗潛水還是考取",
+    "words": 1654,
+    "spots": [
+      "kenting"
+    ],
+    "cover": "assets/covers/kenting-shore.svg",
+    "legacy": false
+  },
+  {
     "slug": "coral-bleaching-asia",
     "title": "珊瑚白化是怎麼回事:潛水員在亞洲海域看到的變化與能做的事",
     "category": "ocean",
