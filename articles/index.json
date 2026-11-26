@@ -1,5 +1,18 @@
 [
   {
+    "slug": "moalboal-sardine",
+    "title": "墨寶 Moalboal:沙丁魚風暴岸邊就看得到,行程怎麼排",
+    "category": "spot",
+    "date": "2026-11-26",
+    "summary": "墨寶 Moalboal：沙丁魚風暴岸邊就看得到，行程怎麼排",
+    "words": 2503,
+    "spots": [
+      "moalboal"
+    ],
+    "cover": "assets/covers/moalboal-sardine.svg",
+    "legacy": false
+  },
+  {
     "slug": "dive-log-why",
     "title": "潛水日誌怎麼寫才有用:紙本、App、潛水電腦匯出各自的優缺點",
     "category": "life",
